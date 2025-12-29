@@ -1,8 +1,8 @@
 using DotNetExample.Api.Controllers;
 using DotNetExample.Domain.Commands;
 using DotNetExample.Domain.Queries;
-using NSubstitute;
 using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
 
 namespace DotNetExample.Tests.Api.FooControllerTests;
 
