@@ -1,5 +1,6 @@
 ﻿using DotNetExample.Domain.Commands;
 using DotNetExample.Domain.Queries;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetExample.Api.Controllers;

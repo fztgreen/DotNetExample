@@ -3,7 +3,6 @@ using DotNetExample.DataAccess.Wrappers;
 using DotNetExample.Domain.Commands;
 using DotNetExample.Domain.DataAccess;
 using DotNetExample.Domain.Queries;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNetExample.IoC;
 
