@@ -1,4 +1,4 @@
-﻿namespace DotNetExample.Domain.Queries;
+namespace DotNetExample.Domain.Queries;
 
 public interface IGetFoo
 {

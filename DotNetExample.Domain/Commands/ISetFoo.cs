@@ -1,4 +1,4 @@
-﻿namespace DotNetExample.Domain.Commands;
+namespace DotNetExample.Domain.Commands;
 
 public interface ISetFoo
 {

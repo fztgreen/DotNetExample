@@ -1,4 +1,4 @@
-﻿namespace DotNetExample.DataAccess.Wrappers;
+namespace DotNetExample.DataAccess.Wrappers;
 
 public interface IHttpClientWrapper
 {

@@ -1,4 +1,4 @@
-﻿using DotNetExample.DataAccess.Wrappers;
+using DotNetExample.DataAccess.Wrappers;
 using DotNetExample.Domain.DataAccess;
 
 namespace DotNetExample.DataAccess;

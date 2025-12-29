@@ -1,4 +1,4 @@
-﻿using DotNetExample.Domain.DataAccess;
+using DotNetExample.Domain.DataAccess;
 
 namespace DotNetExample.Domain.Commands;
 
