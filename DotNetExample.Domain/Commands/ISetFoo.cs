@@ -1,5 +1,6 @@
 ﻿namespace DotNetExample.Domain.Commands;
 
-internal interface ISetFoo
+public interface ISetFoo
 {
+    Task ExecuteAsync(string value);
 }

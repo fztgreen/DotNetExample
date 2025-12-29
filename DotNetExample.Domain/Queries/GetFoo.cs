@@ -1,5 +1,18 @@
-﻿namespace DotNetExample.Domain.Queries;
+﻿using DotNetExample.Domain.DataAccess;
 
-internal class GetFoo : IGetFoo
+namespace DotNetExample.Domain.Queries;
+
+public class GetFoo : IGetFoo
 {
+    private readonly IFooRepository _fooRepository;
+
+    public GetFoo(IFooRepository fooRepository)
+    {
+        _fooRepository = fooRepository;
+    }
+
+    public Task<string> ExecuteAsync()
+    {
+        return _fooRepository.GetFooAsync();
+    }
 }

@@ -1,5 +1,6 @@
 ﻿namespace DotNetExample.DataAccess.Wrappers;
 
-internal interface IHttpClientWrapper
+public interface IHttpClientWrapper
 {
+    Task<string> GetAsync(string requestUri);
 }

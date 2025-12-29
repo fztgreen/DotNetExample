@@ -1,6 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-
+﻿using DotNetExample.Domain.Commands;
+using DotNetExample.Domain.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetExample.Api.Controllers;
@@ -9,9 +8,20 @@ namespace DotNetExample.Api.Controllers;
 [ApiController]
 public class FooController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    private readonly IGetFoo _getFoo;
+    private readonly ISetFoo _setFoo;
+
+    public FooController(IGetFoo getFoo, ISetFoo setFoo)
     {
-        return Ok("Hello from FooController!");
+        _getFoo = getFoo;
+        _setFoo = setFoo;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var result = await _getFoo.ExecuteAsync();
+        await _setFoo.ExecuteAsync(result);
+        return Ok(result);
     }
 }

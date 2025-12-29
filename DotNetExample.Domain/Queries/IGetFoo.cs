@@ -1,5 +1,6 @@
 ﻿namespace DotNetExample.Domain.Queries;
 
-internal interface IGetFoo
+public interface IGetFoo
 {
+    Task<string> ExecuteAsync();
 }
