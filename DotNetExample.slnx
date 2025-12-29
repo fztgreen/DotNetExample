@@ -1,3 +1,7 @@
 <Solution>
   <Project Path="DotNetExample.Api/DotNetExample.Api.csproj" />
+  <Project Path="DotNetExample.DataAccess/DotNetExample.DataAccess.csproj" />
+  <Project Path="DotNetExample.Domain/DotNetExample.Domain.csproj" />
+  <Project Path="DotNetExample.IoC/DotNetExample.IoC.csproj" />
+  <Project Path="DotNetExample.Tests/DotNetExample.Tests.csproj" />
 </Solution>
