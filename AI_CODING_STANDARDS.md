@@ -39,6 +39,13 @@ graph TD
     *   **Rule**: Assert on Return Values or State Changes whenever possible.
     *   **Fallback**: Use `Received()` (interaction testing) ONLY for void methods where no state change or return value can be observed (e.g., logging, or the final boundary call).
 
+### Dependencies Checklist
+Ensure the following are installed/available before starting work:
+1.  **MSTest.Sdk**: Core testing framework.
+2.  **FluentAssertions**: For expressive assertions.
+3.  **NSubstitute**: For mocking.
+4.  **Microsoft.AspNetCore.App**: Framework Reference (Required for API Integration Tests).
+
 ## 3. Development Workflow: Test Driven Development (TDD)
 
 **CRITICAL INSTRUCTION**: AI Agents must strictly adhere to the **Red/Green/Refactor** cycle. You are FORBIDDEN from writing implementation code without a verified failing test.
