@@ -36,16 +36,28 @@ graph TD
 *   **Language**: C# (Latest)
 *   **Testing**: MSTest
 *   **Assertions**: FluentAssertions
-*   **Mocking**: NSubstitute (Strictly for external boundaries ONLY)
+    *   **Rule**: Assert on Return Values or State Changes whenever possible.
+    *   **Fallback**: Use `Received()` (interaction testing) ONLY for void methods where no state change or return value can be observed (e.g., logging, or the final boundary call).
 
 ## 3. Development Workflow: Test Driven Development (TDD)
 
 **CRITICAL INSTRUCTION**: AI Agents must strictly adhere to the **Red/Green/Refactor** cycle. You are FORBIDDEN from writing implementation code without a verified failing test.
 
+### Test Coverage Requirements
+Every feature MUST cover the following scenarios (where applicable):
+1.  **Happy Path**:
+    *   **200 OK**: Request succeeded with data.
+    *   **201 Created**: Resource successfully created.
+    *   **204 No Content**: Action succeeded (Update/Delete).
+2.  **Unhappy Paths (Error Handling)**:
+    *   **400 Bad Request**: Validation failure (Invalid model, missing fields).
+    *   **404 Not Found**: Resource does not exist (Get/Update/Delete).
+    *   **500 Internal Server Error**: Unexpected downstream failures (Mocked Exception from Wrapper).
+
 ### Phase 1: RED (Write Test)
 1.  **Goal**: Write a failing test for a specific behavior.
 2.  **Action**: Create a test file following the [File Organization](#5-file-organization--naming-conventions) rules.
-3.  **Best Practice**: Use **Randomized Data** (e.g., `Guid.NewGuid()`, `Random.Shared.Next()`) instead of static constants.
+3.  **Best Practice**: Use **Randomized Data** via the `RandomTestValues` package instead of static constants or manual random calls.
     *   *Why?* Prevents "hardcoding" solutions (e.g., `return 0`) that accidentally pass static tests. It forces the implementation to handle dynamic input.
 4.  **Run**: `dotnet test --filter <TestName>`.
 5.  **Validation**:
@@ -62,7 +74,9 @@ graph TD
 1.  **Goal**: Clean up code/tests without changing behavior.
 2.  **Action**:
     *   **Clean Code Principles**: Use expressive variable names.
-    *   **Comments**: Avoid comments explaining *WHAT*. Extract logic to private methods with descriptive names instead. Only comment *WHY*.
+    *   **Comments**:
+        *   **REQUIRED**: Use `// Arrange`, `// Act`, `// Assert` comments to clearly delineate test phases.
+        *   **FORBIDDEN**: Avoid inline comments explaining *WHAT* or *WHY* (e.g., `// Using real instance...`). The code structure should be self-explanatory. Extract logic to private methods with descriptive names instead.
     *   **Structure**: Remove magic strings, extract methods. Use `TestBase` classes to reduce setup boilerplate.
 
 ### Phase 4: ITERATE
@@ -70,9 +84,13 @@ graph TD
 2.  **Action**: Add the next test case (e.g., `Add(1,1)` returns `2`).
     *   **Technique**: Use `[DataRow]`, `[TestCase]`, or similar attributes to modify existing tests or add new permutations efficiently.
 
-### Mocking Rules
-*   **ALLOWED**: Mocking external architectural boundaries (e.g., `IHttpClientWrapper`, `IDbConnection`, `IRepository`).
-*   **FORBIDDEN**: Mocking internal domain classes/data structures. Use real instances to ensure tests verify actual behavior, not implementation details.
+### Mocking Rules & Isolation
+*   **Architectural Rule**: The DataAccess layer must implement the **Repository Pattern** by using a **Wrapper Pattern** for the underlying store (e.g., `IMongoDbWrapper`, `ISqlWrapper`).
+    *   *Reason*: Allows testing business logic with real Repository implementations but mocked low-level drivers.
+*   **ALLOWED**: Mocking **Infrastructure Wrappers** (e.g., `IMongoDbWrapper`, `IHttpClientWrapper`, `IDateTimeWrapper`).
+*   **FORBIDDEN**: Mocking **Domain Repository Interfaces** (e.g., `IStudentRepository`) in logical tests.
+    *   *Correction*: When testing Commands/Queries, use the **REAL** Repository implementation injected with a **MOCKED** Wrapper.
+*   **FORBIDDEN**: Mocking internal domain entities or value objects. Use real instances.
 
 ## 4. Design Patterns & Conventions
 
