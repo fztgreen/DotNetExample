@@ -15,5 +15,14 @@ public static class RegisterDependencies
         services.AddScoped<IFooRepository, FooRepository>();
         services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
         services.AddSingleton<HttpClient>();
+
+        // Student services
+        services.AddScoped<ICreateStudent, CreateStudent>();
+        services.AddScoped<IGetStudent, GetStudent>();
+        services.AddScoped<IGetAllStudents, GetAllStudents>();
+        services.AddScoped<IUpdateStudent, UpdateStudent>();
+        services.AddScoped<IDeleteStudent, DeleteStudent>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
     }
+
 }
