@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # AI Coding Standards & Project Specification
 
 This document serves as the **Single Source of Truth** for AI Agents and Developers working on this solution. It combines Architectural Standards, Technology Choices, and strict Test Driven Development (TDD) protocols.
@@ -45,6 +49,9 @@ Ensure the following are installed/available before starting work:
 2.  **FluentAssertions**: For expressive assertions.
 3.  **NSubstitute**: For mocking.
 4.  **Microsoft.AspNetCore.App**: Framework Reference (Required for API Integration Tests).
+    *   **Integration Test Setup**: For `WebApplicationFactory` to work correctly in .NET 8/10+, ensure the API entry point is visible to the Test project:
+        *   **Option 1**: Add `public partial class Program { }` to the IoC project's `Program.cs`.
+        *   **Option 2**: Use `[assembly: InternalsVisibleTo("[ProjectName].Tests")]` in the IoC/Api project.
 
 ## 3. Development Workflow: Test Driven Development (TDD)
 
@@ -79,7 +86,9 @@ Every feature MUST cover the following scenarios (where applicable):
 
 ### Phase 3: REFACTOR
 1.  **Goal**: Clean up code/tests without changing behavior.
-2.  **Action**:
+2.  **Purity Rule**: **Refactoring must NEVER change the test's Assert statements.** If an Assert must change, you are in a new **RED** phase, not a REFACTOR phase.
+    *   *Why?* This prevents scope creep. Refactoring is about improving structure, not adding features or changing expectations.
+3.  **Action**:
     *   **Clean Code Principles**: Use expressive variable names.
     *   **Comments**:
         *   **REQUIRED**: Use `// Arrange`, `// Act`, `// Assert` comments to clearly delineate test phases.
@@ -129,6 +138,7 @@ To maintain context and clarity, use granular test files:
     *   `Api/FooControllerTests/GetShould_ReturnOk.cs`
     *   `Api/FooControllerTests/GetShould_Throw_WhenInvalid.cs`
 *   **Tip**: Use `partial class` for shared setup if splitting tests for the same method.
+*   **AI Warning - Partial Class State Management**: When creating a new partial test file, **ALWAYS read the existing Base or Setup partial file first** to ensure you don't redefine methods like `[TestInitialize]` or duplicate setup logic. AI agents can lose context across multiple files of the same partial class.
 
 ## 6. Instructions for AI Code Generation
 
