@@ -21,8 +21,8 @@ public class FooController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var result = await _getFoo.ExecuteAsync();
-        await _setFoo.ExecuteAsync(result);
+        var result = await _getFoo.CurrentAsync();
+        await _setFoo.ToAsync(result);
         return Ok(result);
     }
 }

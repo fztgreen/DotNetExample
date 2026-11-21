@@ -4,5 +4,5 @@ namespace DotNetExample.Domain.Queries.Cars;
 
 public interface IGetCars
 {
-    Task<IReadOnlyCollection<Car>> ExecuteAsync();
+    Task<IReadOnlyCollection<Car>> AllAsync();
 }

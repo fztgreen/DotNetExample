@@ -12,7 +12,7 @@ public class DeleteCar : IDeleteCar
         _carRepository = carRepository;
     }
 
-    public async Task ExecuteAsync(Guid id)
+    public async Task ByAsync(Guid id)
     {
         var carWasDeleted = await _carRepository.DeleteCarAsync(id);
         if (!carWasDeleted)

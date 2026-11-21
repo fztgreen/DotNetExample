@@ -12,7 +12,7 @@ public class AddCar : IAddCar
         _carRepository = carRepository;
     }
 
-    public Task ExecuteAsync(Car car)
+    public Task WithAsync(Car car)
     {
         return _carRepository.AddCarAsync(car);
     }

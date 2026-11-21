@@ -13,7 +13,7 @@ public class UpdateCar : IUpdateCar
         _carRepository = carRepository;
     }
 
-    public async Task ExecuteAsync(Car car)
+    public async Task WithAsync(Car car)
     {
         var carWasUpdated = await _carRepository.UpdateCarAsync(car);
         if (!carWasUpdated)

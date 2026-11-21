@@ -12,7 +12,7 @@ public class GetCar : IGetCar
         _carRepository = carRepository;
     }
 
-    public Task<Car?> ExecuteAsync(Guid id)
+    public Task<Car?> ByAsync(Guid id)
     {
         return _carRepository.GetCarAsync(id);
     }

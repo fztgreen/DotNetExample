@@ -11,7 +11,7 @@ public class SetFoo : ISetFoo
         _fooRepository = fooRepository;
     }
 
-    public Task ExecuteAsync(string value)
+    public Task ToAsync(string value)
     {
         return _fooRepository.SetFooAsync(value);
     }

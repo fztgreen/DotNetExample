@@ -4,5 +4,5 @@ namespace DotNetExample.Domain.Queries.Cars;
 
 public interface IGetCar
 {
-    Task<Car?> ExecuteAsync(Guid id);
+    Task<Car?> ByAsync(Guid id);
 }

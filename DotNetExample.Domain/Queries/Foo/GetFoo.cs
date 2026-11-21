@@ -11,7 +11,7 @@ public class GetFoo : IGetFoo
         _fooRepository = fooRepository;
     }
 
-    public Task<string> ExecuteAsync()
+    public Task<string> CurrentAsync()
     {
         return _fooRepository.GetFooAsync();
     }

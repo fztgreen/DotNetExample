@@ -32,7 +32,7 @@ public class CarsController : ControllerBase
     [ProducesResponseType<IReadOnlyCollection<Car>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        var cars = await _getCars.ExecuteAsync();
+        var cars = await _getCars.AllAsync();
         return Ok(cars);
     }
 
@@ -41,7 +41,7 @@ public class CarsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
-        var car = await _getCar.ExecuteAsync(id);
+        var car = await _getCar.ByAsync(id);
         return car is null ? NotFound() : Ok(car);
     }
 
@@ -51,7 +51,7 @@ public class CarsController : ControllerBase
     public async Task<IActionResult> Create(CarRequest request)
     {
         var car = request.ToCar(Guid.NewGuid());
-        await _addCar.ExecuteAsync(car);
+        await _addCar.WithAsync(car);
         return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), car);
     }
 
@@ -63,7 +63,7 @@ public class CarsController : ControllerBase
     {
         try
         {
-            await _updateCar.ExecuteAsync(request.ToCar(id));
+            await _updateCar.WithAsync(request.ToCar(id));
             return NoContent();
         }
         catch (CarNotFoundException)
@@ -79,7 +79,7 @@ public class CarsController : ControllerBase
     {
         try
         {
-            await _deleteCar.ExecuteAsync(id);
+            await _deleteCar.ByAsync(id);
             return NoContent();
         }
         catch (CarNotFoundException)

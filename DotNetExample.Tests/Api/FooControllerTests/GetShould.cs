@@ -28,7 +28,7 @@ public class GetShould
     {
         // Arrange
         var expected = "Hello from FooController!";
-        _getFoo.ExecuteAsync().Returns(expected);
+        _getFoo.CurrentAsync().Returns(expected);
 
         // Act
         var result = await _sut.Get();
@@ -37,6 +37,6 @@ public class GetShould
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         var okResult = (OkObjectResult)result;
         Assert.AreEqual(expected, okResult.Value);
-        await _setFoo.Received(1).ExecuteAsync(expected);
+        await _setFoo.Received(1).ToAsync(expected);
     }
 }

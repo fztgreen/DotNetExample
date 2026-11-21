@@ -12,7 +12,7 @@ public class GetCars : IGetCars
         _carRepository = carRepository;
     }
 
-    public Task<IReadOnlyCollection<Car>> ExecuteAsync()
+    public Task<IReadOnlyCollection<Car>> AllAsync()
     {
         return _carRepository.GetCarsAsync();
     }
