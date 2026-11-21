@@ -1,6 +1,6 @@
-using DotNetExample.Domain.DataAccess;
+using DotNetExample.Domain.DataAccess.Foo;
 
-namespace DotNetExample.Domain.Queries;
+namespace DotNetExample.Domain.Queries.Foo;
 
 public class GetFoo : IGetFoo
 {
@@ -11,7 +11,7 @@ public class GetFoo : IGetFoo
         _fooRepository = fooRepository;
     }
 
-    public Task<string> ExecuteAsync()
+    public Task<string> CurrentAsync()
     {
         return _fooRepository.GetFooAsync();
     }

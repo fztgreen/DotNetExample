@@ -1,6 +1,6 @@
-using DotNetExample.Domain.DataAccess;
+using DotNetExample.Domain.DataAccess.Foo;
 
-namespace DotNetExample.Domain.Commands;
+namespace DotNetExample.Domain.Commands.Foo;
 
 public class SetFoo : ISetFoo
 {
@@ -11,7 +11,7 @@ public class SetFoo : ISetFoo
         _fooRepository = fooRepository;
     }
 
-    public Task ExecuteAsync(string value)
+    public Task ToAsync(string value)
     {
         return _fooRepository.SetFooAsync(value);
     }

@@ -1,4 +1,4 @@
-namespace DotNetExample.Domain.DataAccess;
+namespace DotNetExample.Domain.DataAccess.Foo;
 
 public interface IFooRepository
 {

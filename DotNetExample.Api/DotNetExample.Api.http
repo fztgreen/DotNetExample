@@ -1,6 +1,62 @@
-@DotNetExample.Api_HostAddress = http://localhost:5222
+@DotNetExample.Api_HostAddress = http://localhost:64822
+@carId = 00000000-0000-0000-0000-000000000000
 
-GET {{DotNetExample.Api_HostAddress}}/weatherforecast/
+GET {{DotNetExample.Api_HostAddress}}/api/cars
 Accept: application/json
+
+###
+
+POST {{DotNetExample.Api_HostAddress}}/api/cars
+Content-Type: application/json
+
+{
+  "make": "Porsche",
+  "model": "911 Carrera",
+  "lengthInMillimeters": 4542,
+  "tireSize": {
+    "widthInMillimeters": 245,
+    "aspectRatio": 35,
+    "wheelDiameterInInches": 20
+  },
+  "engine": {
+    "displacementInLiters": 3.0,
+    "horsepower": 379,
+    "torqueInPoundFeet": 331,
+    "cylinders": 6,
+    "shape": "Flat"
+  }
+}
+
+###
+
+GET {{DotNetExample.Api_HostAddress}}/api/cars/{{carId}}
+Accept: application/json
+
+###
+
+PUT {{DotNetExample.Api_HostAddress}}/api/cars/{{carId}}
+Content-Type: application/json
+
+{
+  "make": "Porsche",
+  "model": "911 Carrera S",
+  "lengthInMillimeters": 4542,
+  "tireSize": {
+    "widthInMillimeters": 305,
+    "aspectRatio": 30,
+    "wheelDiameterInInches": 21
+  },
+  "engine": {
+    "displacementInLiters": 3.0,
+    "horsepower": 443,
+    "torqueInPoundFeet": 390,
+    "cylinders": 6,
+    "shape": "Flat"
+  }
+}
+
+###
+
+DELETE {{DotNetExample.Api_HostAddress}}/api/cars/{{carId}}
 
 ###

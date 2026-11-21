@@ -1,5 +1,5 @@
-using DotNetExample.Domain.Commands;
-using DotNetExample.Domain.Queries;
+using DotNetExample.Domain.Commands.Foo;
+using DotNetExample.Domain.Queries.Foo;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +21,14 @@ public class FooController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var result = await _getFoo.ExecuteAsync();
-        await _setFoo.ExecuteAsync(result);
+        var result = await _getFoo.CurrentAsync();
         return Ok(result);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] string value)
+    {
+        await _setFoo.ToAsync(value);
+        return NoContent();
     }
 }

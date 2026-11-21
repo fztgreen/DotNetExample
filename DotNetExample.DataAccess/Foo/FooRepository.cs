@@ -1,7 +1,7 @@
 using DotNetExample.DataAccess.Wrappers;
-using DotNetExample.Domain.DataAccess;
+using DotNetExample.Domain.DataAccess.Foo;
 
-namespace DotNetExample.DataAccess;
+namespace DotNetExample.DataAccess.Foo;
 
 public class FooRepository : IFooRepository
 {
