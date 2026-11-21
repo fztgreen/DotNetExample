@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetExample.Api\DotNetExample.Api.csproj" />
+    <ProjectReference Include="..\DotNetExample.Domain\DotNetExample.Domain.csproj" />
+    <ProjectReference Include="..\DotNetExample.DataAccess\DotNetExample.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
+  </ItemGroup>
+
+</Project>
