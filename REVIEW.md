@@ -13,9 +13,9 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 | `var`, braces, file-scoped namespaces, usings placement, no unused usings, readonly fields, `_camelCase` private fields, `I`-prefixed interfaces | `.editorconfig`, enforced in build (`EnforceCodeStyleInBuild`) |
 | Namespace matches folder path | `.editorconfig` IDE0130, enforced in build |
 | `Nullable`, `ImplicitUsings`, `TreatWarningsAsErrors` | `Directory.Build.props` |
-| Domain references only the base class library; Api and DataAccess don't reference each other or IoC | `Architecture/LayersShould` |
+| Domain references only the base class library and has no packages; Api and DataAccess don't reference each other or IoC, in the `.csproj` or in compiled code | `Architecture/LayersShould` |
 | Only `DataAccess/Wrappers` touches infrastructure (`System.Net`, `System.Data`, `System.IO`, Mongo, Dapper, …) | `Architecture/InfrastructureShould` |
-| No Newtonsoft.Json or EF Core | `Architecture/CodeShould.NotUseBannedLibraries` |
+| No Newtonsoft.Json or EF Core, as a package or in code | `Architecture/CodeShould.NotReferenceBannedPackages`, `NotUseBannedLibraries` |
 | No anonymous types; lambdas are a single one-line expression; no `delegate { … }` blocks | `Architecture/CodeShould` |
 | Async methods end with `Async` (except controller actions and test methods) | `Architecture/CodeShould.NameAsyncMethodsWithAsyncSuffix` |
 | No types directly in a feature folder root (e.g. `Domain/Commands/`) | `Architecture/FeatureFoldersShould` |

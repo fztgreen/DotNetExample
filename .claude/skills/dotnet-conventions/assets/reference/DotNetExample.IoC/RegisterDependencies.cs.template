@@ -1,0 +1,23 @@
+using DotNetExample.DataAccess.Cars;
+using DotNetExample.DataAccess.Wrappers;
+using DotNetExample.Domain.Commands.Cars;
+using DotNetExample.Domain.DataAccess.Cars;
+using DotNetExample.Domain.Queries.Cars;
+
+namespace DotNetExample.IoC;
+
+public static class RegisterDependencies
+{
+    public static void Register(IServiceCollection services)
+    {
+        services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
+
+        services.AddScoped<IGetCar, GetCar>();
+        services.AddScoped<IGetCars, GetCars>();
+        services.AddScoped<IAddCar, AddCar>();
+        services.AddScoped<IUpdateCar, UpdateCar>();
+        services.AddScoped<IDeleteCar, DeleteCar>();
+        services.AddScoped<ICarRepository, CarRepository>();
+        services.AddSingleton<IDocumentDatabaseWrapper, InMemoryDocumentDatabaseWrapper>();
+    }
+}
