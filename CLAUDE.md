@@ -20,6 +20,7 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 - **Mock only wrappers.** When testing Commands/Queries, use the real repository with a mocked wrapper (e.g. `IHttpClientWrapper`).
 - **Before adding a partial test file, read the existing base/setup partial** to avoid redefining `[TestInitialize]`.
 - Register every new handler/repository/wrapper in `DotNetExample.IoC/RegisterDependencies.cs`.
+- **Use Conventional Commits** for commit messages and PR titles (see [CONTRIBUTING.md](CONTRIBUTING.md#commit-messages)).
 
 ## Known Gaps
 
