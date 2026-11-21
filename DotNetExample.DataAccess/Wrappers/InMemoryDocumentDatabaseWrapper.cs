@@ -26,8 +26,16 @@ public class InMemoryDocumentDatabaseWrapper : IDocumentDatabaseWrapper
 
     public bool Replace<T>(string collectionName, Guid id, T document) where T : class
     {
-        return Collection(collectionName).TryGetValue(id, out var existingDocument)
-            && Collection(collectionName).TryUpdate(id, document, existingDocument);
+        var collection = Collection(collectionName);
+        while (collection.TryGetValue(id, out var existingDocument))
+        {
+            if (collection.TryUpdate(id, document, existingDocument))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool Delete(string collectionName, Guid id)
