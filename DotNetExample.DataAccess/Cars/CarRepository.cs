@@ -8,36 +8,36 @@ public class CarRepository : ICarRepository
 {
     private const string CarsCollection = "cars";
 
-    private readonly IInMemoryDatabaseWrapper _inMemoryDatabase;
+    private readonly IDocumentDatabaseWrapper _documentDatabase;
 
-    public CarRepository(IInMemoryDatabaseWrapper inMemoryDatabase)
+    public CarRepository(IDocumentDatabaseWrapper documentDatabase)
     {
-        _inMemoryDatabase = inMemoryDatabase;
+        _documentDatabase = documentDatabase;
     }
 
     public Task<Car?> GetCarAsync(Guid id)
     {
-        return Task.FromResult(_inMemoryDatabase.Find<Car>(CarsCollection, id));
+        return Task.FromResult(_documentDatabase.Find<Car>(CarsCollection, id));
     }
 
     public Task<IReadOnlyCollection<Car>> GetCarsAsync()
     {
-        return Task.FromResult(_inMemoryDatabase.FindAll<Car>(CarsCollection));
+        return Task.FromResult(_documentDatabase.FindAll<Car>(CarsCollection));
     }
 
     public Task AddCarAsync(Car car)
     {
-        _inMemoryDatabase.Insert(CarsCollection, car.Id, car);
+        _documentDatabase.Insert(CarsCollection, car.Id, car);
         return Task.CompletedTask;
     }
 
     public Task<bool> UpdateCarAsync(Car car)
     {
-        return Task.FromResult(_inMemoryDatabase.Replace(CarsCollection, car.Id, car));
+        return Task.FromResult(_documentDatabase.Replace(CarsCollection, car.Id, car));
     }
 
     public Task<bool> DeleteCarAsync(Guid id)
     {
-        return Task.FromResult(_inMemoryDatabase.Delete(CarsCollection, id));
+        return Task.FromResult(_documentDatabase.Delete(CarsCollection, id));
     }
 }

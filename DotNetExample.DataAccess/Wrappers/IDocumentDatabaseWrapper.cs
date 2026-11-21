@@ -1,6 +1,6 @@
 namespace DotNetExample.DataAccess.Wrappers;
 
-public interface IInMemoryDatabaseWrapper
+public interface IDocumentDatabaseWrapper
 {
     T? Find<T>(string collectionName, Guid id) where T : class;
 

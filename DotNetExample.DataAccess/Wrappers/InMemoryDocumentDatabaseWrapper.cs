@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 
 namespace DotNetExample.DataAccess.Wrappers;
 
-public class InMemoryDatabaseWrapper : IInMemoryDatabaseWrapper
+public class InMemoryDocumentDatabaseWrapper : IDocumentDatabaseWrapper
 {
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<Guid, object>> _collections = new();
 

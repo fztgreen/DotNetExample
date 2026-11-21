@@ -33,7 +33,7 @@ public class UpdateShould : CarsControllerTestBase
                 request.Engine.TorqueInPoundFeet,
                 request.Engine.Cylinders,
                 request.Engine.Shape));
-        InMemoryDatabase.Replace(CarsCollection, id, updatedCar).Returns(true);
+        DocumentDatabase.Replace(CarsCollection, id, updatedCar).Returns(true);
 
         // Act
         var response = await Client.PutAsJsonAsync($"{CarsUri}/{id}", request, JsonOptions);
@@ -67,6 +67,6 @@ public class UpdateShould : CarsControllerTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, invalidField);
-        InMemoryDatabase.DidNotReceiveWithAnyArgs().Replace<Car>(default!, default, default!);
+        DocumentDatabase.DidNotReceiveWithAnyArgs().Replace<Car>(default!, default, default!);
     }
 }

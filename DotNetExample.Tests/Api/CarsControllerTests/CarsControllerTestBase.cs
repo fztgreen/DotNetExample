@@ -46,16 +46,16 @@ public abstract class CarsControllerTestBase
 
     private WebApplicationFactory<Program> _factory;
 
-    protected IInMemoryDatabaseWrapper InMemoryDatabase { get; private set; }
+    protected IDocumentDatabaseWrapper DocumentDatabase { get; private set; }
 
     protected HttpClient Client { get; private set; }
 
     [TestInitialize]
     public void StartTestServer()
     {
-        InMemoryDatabase = Substitute.For<IInMemoryDatabaseWrapper>();
+        DocumentDatabase = Substitute.For<IDocumentDatabaseWrapper>();
         _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder => builder.ConfigureTestServices(ReplaceInMemoryDatabase));
+            .WithWebHostBuilder(builder => builder.ConfigureTestServices(ReplaceDocumentDatabase));
         Client = _factory.CreateClient();
     }
 
@@ -106,8 +106,8 @@ public abstract class CarsControllerTestBase
         };
     }
 
-    private void ReplaceInMemoryDatabase(IServiceCollection services)
+    private void ReplaceDocumentDatabase(IServiceCollection services)
     {
-        services.AddSingleton(InMemoryDatabase);
+        services.AddSingleton(DocumentDatabase);
     }
 }

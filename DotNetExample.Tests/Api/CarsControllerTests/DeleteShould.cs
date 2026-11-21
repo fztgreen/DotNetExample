@@ -16,7 +16,7 @@ public class DeleteShould : CarsControllerTestBase
     {
         // Arrange
         var id = RandomValue.Guid();
-        InMemoryDatabase.Delete(CarsCollection, id).Returns(true);
+        DocumentDatabase.Delete(CarsCollection, id).Returns(true);
 
         // Act
         var response = await Client.DeleteAsync($"{CarsUri}/{id}");

@@ -26,6 +26,6 @@ public static class RegisterDependencies
         services.AddScoped<IUpdateCar, UpdateCar>();
         services.AddScoped<IDeleteCar, DeleteCar>();
         services.AddScoped<ICarRepository, CarRepository>();
-        services.AddSingleton<IInMemoryDatabaseWrapper, InMemoryDatabaseWrapper>();
+        services.AddSingleton<IDocumentDatabaseWrapper, InMemoryDocumentDatabaseWrapper>();
     }
 }

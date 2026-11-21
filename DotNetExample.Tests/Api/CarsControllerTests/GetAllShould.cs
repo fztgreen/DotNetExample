@@ -17,7 +17,7 @@ public class GetAllShould : CarsControllerTestBase
     {
         // Arrange
         Car[] cars = [RandomCar(), RandomCar(), RandomCar()];
-        InMemoryDatabase.FindAll<Car>(CarsCollection).Returns(cars);
+        DocumentDatabase.FindAll<Car>(CarsCollection).Returns(cars);
 
         // Act
         var response = await Client.GetAsync(CarsUri);

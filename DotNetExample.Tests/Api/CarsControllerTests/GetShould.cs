@@ -20,7 +20,7 @@ public class GetShould : CarsControllerTestBase
     {
         // Arrange
         var car = RandomCar();
-        InMemoryDatabase.Find<Car>(CarsCollection, car.Id).Returns(car);
+        DocumentDatabase.Find<Car>(CarsCollection, car.Id).Returns(car);
 
         // Act
         var response = await Client.GetAsync($"{CarsUri}/{car.Id}");
@@ -49,7 +49,7 @@ public class GetShould : CarsControllerTestBase
     {
         // Arrange
         var id = RandomValue.Guid();
-        InMemoryDatabase.Find<Car>(CarsCollection, id).Throws(new InvalidOperationException(RandomValue.String()));
+        DocumentDatabase.Find<Car>(CarsCollection, id).Throws(new InvalidOperationException(RandomValue.String()));
 
         // Act
         var response = await Client.GetAsync($"{CarsUri}/{id}");

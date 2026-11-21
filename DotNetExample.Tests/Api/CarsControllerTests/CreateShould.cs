@@ -28,7 +28,7 @@ public class CreateShould : CarsControllerTestBase
         createdCar.Should().BeEquivalentTo(request);
         createdCar!.Id.Should().NotBeEmpty();
         response.Headers.Location!.AbsolutePath.Should().BeEquivalentTo($"/{CarsUri}/{createdCar.Id}");
-        InMemoryDatabase.Received(1).Insert(CarsCollection, createdCar.Id, createdCar);
+        DocumentDatabase.Received(1).Insert(CarsCollection, createdCar.Id, createdCar);
     }
 
     [TestMethod]
@@ -43,6 +43,6 @@ public class CreateShould : CarsControllerTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest, invalidField);
-        InMemoryDatabase.DidNotReceiveWithAnyArgs().Insert<Car>(default!, default, default!);
+        DocumentDatabase.DidNotReceiveWithAnyArgs().Insert<Car>(default!, default, default!);
     }
 }
