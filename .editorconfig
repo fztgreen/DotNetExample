@@ -46,7 +46,8 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_collection_initializer = true:suggestion
 dotnet_style_explicit_tuple_names = true:suggestion
-dotnet_style_namespace_match_folder = true:suggestion
+dotnet_style_namespace_match_folder = true:error
+dotnet_diagnostic.IDE0130.severity = error
 dotnet_style_null_propagation = true:suggestion
 dotnet_style_object_initializer = true:suggestion
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
@@ -148,6 +149,9 @@ dotnet_naming_style.interfaces_i_prefix.capitalization = pascal_case
 dotnet_naming_rule.interfaces_begin_with_i.severity = error
 dotnet_naming_rule.interfaces_begin_with_i.symbols = interfaces
 dotnet_naming_rule.interfaces_begin_with_i.style = interfaces_i_prefix
+
+# Report naming violations during build, not only in the IDE
+dotnet_diagnostic.IDE1006.severity = error
 
 # -------------------------
 # Baseline C# conventions from the default template (kept as-is unless they conflict)
