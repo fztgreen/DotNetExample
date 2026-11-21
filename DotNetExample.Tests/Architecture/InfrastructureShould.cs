@@ -1,0 +1,35 @@
+using FluentAssertions;
+
+namespace DotNetExample.Tests.Architecture;
+
+[TestClass]
+public class InfrastructureShould
+{
+    private const string WrappersNamespace = "DotNetExample.DataAccess.Wrappers";
+
+    private static readonly string[] _infrastructureNamespaces =
+    [
+        "System.Net",
+        "System.Data",
+        "System.IO",
+        "System.Collections.Concurrent",
+        "Microsoft.Data",
+        "Microsoft.EntityFrameworkCore",
+        "Microsoft.Extensions.Http",
+        "MongoDB",
+        "Dapper"
+    ];
+
+    [TestMethod]
+    public void OnlyBeReachedThroughWrappers()
+    {
+        // Arrange
+        System.Reflection.Assembly[] layersThatMustUseWrappers = [SolutionAssemblies.Domain, SolutionAssemblies.DataAccess, SolutionAssemblies.Api];
+
+        // Act
+        var violations = NamespaceDependencies.Find(layersThatMustUseWrappers, _infrastructureNamespaces, WrappersNamespace);
+
+        // Assert
+        violations.Should().BeEmpty();
+    }
+}
