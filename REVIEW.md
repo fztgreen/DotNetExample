@@ -9,6 +9,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 - [ ] No `Program.cs` or DI wiring outside the IoC project.
 - [ ] New handlers, repositories, and wrappers are registered in `RegisterDependencies.cs`.
 - [ ] Repositories reach external stores only through a wrapper interface.
+- [ ] JSON uses `System.Text.Json` and SQL uses Dapper inside the SQL wrapper, with named parameter records; no Newtonsoft.Json or EF Core.
 - [ ] Wrapper interfaces are named after the kind of store (`IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`), not a product or hosting choice; technology names appear only on implementations.
 - [ ] New files are in the correct layer and feature folder (e.g. `Domain/Commands/Cars/`), with namespaces matching the folder path. Only controllers and shared wrappers stay flat.
 

@@ -77,6 +77,17 @@ To meet both, **name and shape the interface after the kind of store, and name t
 - **Changing technology within a kind** (in-memory → MongoDB) means writing a new implementation and changing one line in `RegisterDependencies.cs`. Repositories and tests don't change.
 - **Changing to a different kind** (document → relational) means a different wrapper interface, and the repository changes too, because the query it builds is different. That's expected, because the repository owns the query.
 
+### Preferred Libraries
+
+| Concern | Use | Instead of |
+|---|---|---|
+| JSON serialization | `System.Text.Json` | `Newtonsoft.Json` |
+| SQL data access | Dapper | Entity Framework Core and other full ORMs |
+
+- **System.Text.Json** is built into .NET and is what ASP.NET Core already uses, so the app has one serializer and one set of options. Configure it in `ApiConfiguration.AddApi()`, and have tests deserialize with matching `JsonSerializerOptions`.
+- **Dapper** lives only in DataAccess, inside the `ISqlDatabaseWrapper` implementation. The repository writes the SQL text and parameters, and the wrapper hands them straight to Dapper (e.g. `connection.QueryAsync<T>(sql, parameters)`). The query stays in the repository, where tests can match it exactly (see [Wrapper Interfaces](#wrapper-interfaces)). EF Core builds its SQL from LINQ lambdas. That hides the query from tests and breaks [No Anonymous Types or Functions](#no-anonymous-types-or-functions).
+- **Pass Dapper parameters as a named record**, not the usual anonymous object: `new CarByIdParameters(id)`, not `new { id }`. Dapper maps record properties to `@Id`-style parameters by name.
+
 ### Naming
 
 - Interfaces are PascalCase prefixed with `I` (e.g. `IFooRepository`).

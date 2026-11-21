@@ -65,6 +65,7 @@ Code is grouped into a folder per feature inside each layer, with namespaces mat
 - `TreatWarningsAsErrors` in every project
 - MSTest (`MSTest.Sdk`), NSubstitute, FluentAssertions, RandomTestValues
 - Swashbuckle for Swagger
+- `System.Text.Json` for JSON and Dapper for SQL (see [Preferred Libraries](CONTRIBUTING.md#preferred-libraries))
 
 ## Documentation
 
