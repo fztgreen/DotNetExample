@@ -1,5 +1,7 @@
 # Testing
 
+> Names marked † are illustrative: they show how something would be named or used, but they don't exist in this repository. Code blocks are examples unless they name the file they come from.
+
 ## Running Tests
 
 ```bash
@@ -22,7 +24,7 @@ Tests run in parallel at method level (`MSTestSettings.cs`), so tests must not s
 
 ## Test Driven Development
 
-Every change follows the **Red/Green/Refactor** cycle. Implementation code may not be written without a verified failing test.
+Every change follows the **Red/Green/Refactor** cycle. Implementation code may not be written without a verified failing test. Tests for behavior that already exists follow [Tests that pass on the first run](#tests-that-pass-on-the-first-run) instead.
 
 ### 1. Red — write a failing test
 
@@ -44,6 +46,22 @@ Every change follows the **Red/Green/Refactor** cycle. Implementation code may n
 
 Add the next test case to evolve the logic. Use `[DataRow]` to add permutations to existing tests efficiently.
 
+### Tests that pass on the first run
+
+Some required tests pass as soon as they're written, because the behavior they check already exists. For example:
+
+- ASP.NET Core already returns 500 for an unhandled exception.
+- `[ApiController]` already returns 400 for a request DTO that another endpoint's tests already validate.
+- A contract test can describe a wrapper that's already written.
+
+These are **coverage tests**. They pin down behavior that [Coverage Requirements](#coverage-requirements) demands; they don't drive new code. They're allowed, under three rules:
+
+1. **Prove the test can fail by breaking the code, never the test.** Temporarily break the behavior it covers, then run it and watch it fail with a message that names the problem. Restore the code afterwards. Ways to break the behavior include removing the validation attribute, catching the exception and returning 200, or making the repository build a different URI. Don't edit the assertion to see red: that only proves the assertion can fail, not that the test checks the behavior.
+2. **Write no production code for it.** If a coverage test fails, it has found a bug, and you're in a normal Red phase. That's how the wrapper concurrency contract test exposed the race in `InMemoryDocumentDatabaseWrapper.Replace`.
+3. **Say so.** In the commit or PR, note which tests passed on their first run and how each was shown to fail.
+
+If a test passes immediately and no change to the code makes it fail, it isn't checking anything. Fix it or delete it.
+
 ## Coverage Requirements
 
 Every feature must cover these scenarios where applicable:
@@ -61,7 +79,7 @@ Every feature must cover these scenarios where applicable:
 
 Mock as little as possible. Put the mock at the lowest point that has to be faked: the call that actually leaves the process (network, database, clock, file system). Everything above that point runs for real in the test: query building, parameter mapping, response parsing.
 
-- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`, `IDateTimeWrapper`, …), and only at the method that performs the external call.
+- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`†, `IDateTimeWrapper`†, …), and only at the method that performs the external call.
 - **Forbidden:** mocking Domain repository interfaces (e.g. `IFooRepository`) in logic tests. When testing Commands/Queries, use the **real** repository injected with a **mocked** wrapper.
 - **Forbidden:** mocking domain entities or value objects. Use real instances.
 

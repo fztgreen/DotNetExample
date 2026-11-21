@@ -1,5 +1,7 @@
 # Contributing
 
+> Names marked † are illustrative: they show how something would be named or used, but they don't exist in this repository. Code blocks are examples unless they name the file they come from.
+
 This solution is the standard template for .NET projects, so every change must preserve its predictable structure. See [README.md](README.md) for the architecture overview, [TESTING.md](TESTING.md) for the required TDD workflow, and [REVIEW.md](REVIEW.md) for what reviewers check.
 
 ## Architecture Rules
@@ -86,10 +88,10 @@ To meet both, **name and shape the interface after the kind of store, and name t
 
 | Kind of store | Interface | Raw input the repository builds | Implementations |
 |---|---|---|---|
-| Document database | `IDocumentDatabaseWrapper` | Collection name, id, document | `InMemoryDocumentDatabaseWrapper`, `MongoDocumentDatabaseWrapper` |
-| Relational database | `ISqlDatabaseWrapper` | SQL text and parameters | `SqlServerDatabaseWrapper`, `PostgresDatabaseWrapper` |
+| Document database | `IDocumentDatabaseWrapper` | Collection name, id, document | `InMemoryDocumentDatabaseWrapper`, `MongoDocumentDatabaseWrapper`† |
+| Relational database | `ISqlDatabaseWrapper`† | SQL text and parameters | `SqlServerDatabaseWrapper`†, `PostgresDatabaseWrapper`† |
 | HTTP API | `IHttpClientWrapper` | Full request URI | `HttpClientWrapper` |
-| Clock | `IDateTimeWrapper` | (none) | `SystemDateTimeWrapper` |
+| Clock | `IDateTimeWrapper`† | (none) | `SystemDateTimeWrapper`† |
 
 - **No product or hosting names in the interface.** `InMemory`, `Mongo`, `SqlServer` and `Cosmos` belong on the implementation class only.
 - **Use the kind's own vocabulary.** A document wrapper has `Find`/`Insert`/`Replace`/`Delete` on a collection; a SQL wrapper takes SQL text. Don't flatten every kind into one generic `IDatabaseWrapper`. To hide whether a call is SQL or a document lookup, it would have to accept domain intent (`GetCar(id)`), which moves the query out of reach of tests.
@@ -104,8 +106,8 @@ To meet both, **name and shape the interface after the kind of store, and name t
 | SQL data access | Dapper | Entity Framework Core and other full ORMs |
 
 - **System.Text.Json** is built into .NET and is what ASP.NET Core already uses, so the app has one serializer and one set of options. Configure it in `ApiConfiguration.AddApi()`, and have tests deserialize with matching `JsonSerializerOptions`.
-- **Dapper** lives only in DataAccess, inside the `ISqlDatabaseWrapper` implementation. The repository writes the SQL text and parameters, and the wrapper hands them straight to Dapper (e.g. `connection.QueryAsync<T>(sql, parameters)`). The query stays in the repository, where tests can match it exactly (see [Wrapper Interfaces](#wrapper-interfaces)). EF Core builds its SQL from LINQ expressions at runtime, which hides the query from tests.
-- **Pass Dapper parameters as a named record**, not the usual anonymous object: `new CarByIdParameters(id)`, not `new { id }`. Dapper maps record properties to `@Id`-style parameters by name.
+- **Dapper** lives only in DataAccess, inside the `ISqlDatabaseWrapper`† implementation. The repository writes the SQL text and parameters, and the wrapper hands them straight to Dapper (e.g. `connection.QueryAsync<T>(sql, parameters)`). The query stays in the repository, where tests can match it exactly (see [Wrapper Interfaces](#wrapper-interfaces)). EF Core builds its SQL from LINQ expressions at runtime, which hides the query from tests.
+- **Pass Dapper parameters as a named record**, not the usual anonymous object: `new CarByIdParameters(id)`†, not `new { id }`. Dapper maps record properties to `@Id`-style parameters by name.
 
 ### Naming
 
@@ -145,7 +147,7 @@ Shapes and logic get names. This applies to production code and tests.
 - a lambda that wraps onto more than one line
 - `delegate { … }` blocks: never use them; write a short lambda or a named method instead
 
-**Why:** once a lambda needs a block or a second line, it's doing enough that it deserves a name. The name says *what* it does, so the call still reads like a sentence (`app.Use(LogRequestDurationAsync)`) without the reader decoding the body. Named methods also show up by name in stack traces and can be reused.
+**Why:** once a lambda needs a block or a second line, it's doing enough that it deserves a name. The name says *what* it does, so the call still reads like a sentence (`app.Use(LogRequestDurationAsync)`†) without the reader decoding the body. Named methods also show up by name in stack traces and can be reused.
 
 Expression-bodied members (`public int Count => _items.Count;`) aren't lambdas. They're named members, and they're allowed.
 

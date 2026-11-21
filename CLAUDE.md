@@ -16,7 +16,7 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 
 ## Working Rules for Claude
 
-- **TDD is mandatory.** Write a failing test, run it and confirm it fails, then write the minimum code to pass, then refactor without touching asserts. Never write implementation code first.
+- **TDD is mandatory.** Write a failing test, run it and confirm it fails, then write the minimum code to pass, then refactor without touching asserts. Never write implementation code first. A test that passes immediately because the behavior already exists is a coverage test: prove it can fail by temporarily breaking the code (never the assertion), and report it (see [TESTING.md](TESTING.md#tests-that-pass-on-the-first-run)).
 - **Small steps.** After every file change or test run, stop and evaluate the next step. Don't generate large amounts of code at once or anticipate future requirements.
 - **Mock only wrappers.** When testing Commands/Queries, use the real repository with a mocked wrapper (e.g. `IHttpClientWrapper`).
 - **Feature folders.** Put new code in a per-feature folder inside its layer (e.g. `Domain/Commands/Cars/`) with a matching namespace. Only controllers and shared wrappers stay flat.

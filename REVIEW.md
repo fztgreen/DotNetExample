@@ -1,5 +1,7 @@
 # Code Review Checklist
 
+> Names marked † are illustrative: they show how something would be named or used, but they don't exist in this repository. Code blocks are examples unless they name the file they come from.
+
 Use this checklist when reviewing changes. Each item traces back to a rule in [CONTRIBUTING.md](CONTRIBUTING.md) or [TESTING.md](TESTING.md).
 
 ## Enforced Automatically
@@ -26,7 +28,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 - [ ] No `Program.cs` or DI wiring outside the IoC project.
 - [ ] New handlers, repositories, and wrappers are registered in `RegisterDependencies.cs`.
 - [ ] SQL goes through Dapper inside the SQL wrapper, with the query text built in the repository.
-- [ ] Wrapper interfaces are named after the kind of store (`IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`), not a product or hosting choice; technology names appear only on implementations.
+- [ ] Wrapper interfaces are named after the kind of store (`IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`†), not a product or hosting choice; technology names appear only on implementations.
 - [ ] New code is in the right feature folder (e.g. `Domain/Commands/Cars/`, not `Domain/Commands/Trucks/`).
 
 ## Design & Conventions
@@ -41,6 +43,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 ## Tests
 
 - [ ] Every behavior change has a test that was written first and seen to fail.
+- [ ] Tests that passed on their first run are called out, along with how each was shown to fail by temporarily breaking the code (see [TESTING.md](TESTING.md#tests-that-pass-on-the-first-run)).
 - [ ] Applicable status codes are covered: 200/201/204, 400, 404, 500.
 - [ ] Only infrastructure wrappers are mocked. Repositories, entities, and value objects are real.
 - [ ] Mocks match the exact URI/query/procedure the code should send; no logic lives in wrappers.
