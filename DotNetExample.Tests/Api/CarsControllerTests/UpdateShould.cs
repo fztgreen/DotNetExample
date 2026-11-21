@@ -21,18 +21,7 @@ public class UpdateShould : CarsControllerTestBase
         // Arrange
         var id = RandomValue.Guid();
         var request = RandomCarRequest();
-        var updatedCar = new Car(
-            id,
-            request.Make,
-            request.Model,
-            request.LengthInMillimeters,
-            new TireSize(request.TireSize.WidthInMillimeters, request.TireSize.AspectRatio, request.TireSize.WheelDiameterInInches),
-            new Engine(
-                request.Engine.DisplacementInLiters,
-                request.Engine.Horsepower,
-                request.Engine.TorqueInPoundFeet,
-                request.Engine.Cylinders,
-                request.Engine.Shape));
+        var updatedCar = ExpectedCar(request, id);
         DocumentDatabase.Replace(CarsCollection, id, updatedCar).Returns(true);
 
         // Act

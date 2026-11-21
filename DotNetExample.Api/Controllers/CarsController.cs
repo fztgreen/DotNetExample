@@ -1,6 +1,5 @@
 using DotNetExample.Api.Models.Cars;
 using DotNetExample.Domain.Commands.Cars;
-using DotNetExample.Domain.Entities.Cars;
 using DotNetExample.Domain.Exceptions.Cars;
 using DotNetExample.Domain.Queries.Cars;
 
@@ -29,30 +28,30 @@ public class CarsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<IReadOnlyCollection<Car>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyCollection<CarResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var cars = await _getCars.AllAsync();
-        return Ok(cars);
+        return Ok(cars.Select(CarResponse.From).ToArray());
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<Car>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CarResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
         var car = await _getCar.ByAsync(id);
-        return car is null ? NotFound() : Ok(car);
+        return car is null ? NotFound() : Ok(CarResponse.From(car));
     }
 
     [HttpPost]
-    [ProducesResponseType<Car>(StatusCodes.Status201Created)]
+    [ProducesResponseType<CarResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CarRequest request)
     {
         var car = request.ToCar(Guid.NewGuid());
         await _addCar.WithAsync(car);
-        return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), car);
+        return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), CarResponse.From(car));
     }
 
     [HttpPut("{id:guid}")]

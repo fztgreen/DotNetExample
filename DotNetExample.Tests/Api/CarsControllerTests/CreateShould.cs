@@ -24,11 +24,11 @@ public class CreateShould : CarsControllerTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var createdCar = await response.Content.ReadFromJsonAsync<Car>(JsonOptions);
+        var createdCar = await response.Content.ReadFromJsonAsync<CarResponse>(JsonOptions);
         createdCar.Should().BeEquivalentTo(request);
         createdCar!.Id.Should().NotBeEmpty();
         response.Headers.Location!.AbsolutePath.Should().BeEquivalentTo($"/{CarsUri}/{createdCar.Id}");
-        DocumentDatabase.Received(1).Insert(CarsCollection, createdCar.Id, createdCar);
+        DocumentDatabase.Received(1).Insert(CarsCollection, createdCar.Id, ExpectedCar(request, createdCar.Id));
     }
 
     [TestMethod]

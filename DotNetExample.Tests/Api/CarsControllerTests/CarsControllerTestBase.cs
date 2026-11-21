@@ -13,6 +13,9 @@ using NSubstitute;
 
 using RandomTestValues;
 
+using ApiEngineShape = DotNetExample.Api.Models.Cars.EngineShape;
+using DomainEngineShape = DotNetExample.Domain.Entities.Cars.EngineShape;
+
 namespace DotNetExample.Tests.Api.CarsControllerTests;
 
 public abstract class CarsControllerTestBase
@@ -60,7 +63,7 @@ public abstract class CarsControllerTestBase
                 RandomValue.Int(800, 70),
                 RandomValue.Int(700, 70),
                 RandomValue.Int(16, 1),
-                RandomValue.Enum<EngineShape>()));
+                RandomValue.Enum<DomainEngineShape>()));
     }
 
     protected static CarRequest RandomCarRequest()
@@ -82,9 +85,25 @@ public abstract class CarsControllerTestBase
                 Horsepower = RandomValue.Int(800, 70),
                 TorqueInPoundFeet = RandomValue.Int(700, 70),
                 Cylinders = RandomValue.Int(16, 1),
-                Shape = RandomValue.Enum<EngineShape>()
+                Shape = RandomValue.Enum<ApiEngineShape>()
             }
         };
+    }
+
+    protected static Car ExpectedCar(CarRequest request, Guid id)
+    {
+        return new Car(
+            id,
+            request.Make,
+            request.Model,
+            request.LengthInMillimeters,
+            new TireSize(request.TireSize.WidthInMillimeters, request.TireSize.AspectRatio, request.TireSize.WheelDiameterInInches),
+            new Engine(
+                request.Engine.DisplacementInLiters,
+                request.Engine.Horsepower,
+                request.Engine.TorqueInPoundFeet,
+                request.Engine.Cylinders,
+                Enum.Parse<DomainEngineShape>(request.Engine.Shape.ToString())));
     }
 
     private void ReplaceDocumentDatabase(IServiceCollection services)

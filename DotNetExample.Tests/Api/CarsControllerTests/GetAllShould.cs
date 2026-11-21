@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 
+using DotNetExample.Api.Models.Cars;
 using DotNetExample.Domain.Entities.Cars;
 
 using FluentAssertions;
@@ -24,7 +25,7 @@ public class GetAllShould : CarsControllerTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadFromJsonAsync<Car[]>(JsonOptions);
+        var body = await response.Content.ReadFromJsonAsync<CarResponse[]>(JsonOptions);
         body.Should().BeEquivalentTo(cars);
     }
 }

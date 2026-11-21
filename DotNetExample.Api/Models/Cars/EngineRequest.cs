@@ -23,6 +23,6 @@ public record EngineRequest
 
     public Engine ToEngine()
     {
-        return new Engine(DisplacementInLiters, Horsepower, TorqueInPoundFeet, Cylinders, Shape);
+        return new Engine(DisplacementInLiters, Horsepower, TorqueInPoundFeet, Cylinders, Shape.ToDomain());
     }
 }

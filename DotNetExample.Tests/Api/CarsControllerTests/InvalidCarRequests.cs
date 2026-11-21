@@ -1,5 +1,4 @@
 using DotNetExample.Api.Models.Cars;
-using DotNetExample.Domain.Entities.Cars;
 
 using RandomTestValues;
 
