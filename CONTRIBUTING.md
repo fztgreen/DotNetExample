@@ -64,3 +64,15 @@ Every project must set:
 4. **Work in small steps.** Don't generate large amounts of code at once, and don't anticipate future requirements — solve only the current failing test.
 5. **Check conformity.** New files must land in the correct layer and folder and use the matching namespace.
 6. **Register new types** in `RegisterDependencies.cs`.
+
+## Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) for every commit and PR title:
+
+```text
+<type>(<optional scope>): <short summary in the imperative>
+```
+
+- Common types: `feat`, `fix`, `refactor`, `test`, `docs`, `build`, `ci`, `chore`.
+- Mark breaking changes with `!` after the type (e.g. `feat!: Remove v1 endpoints`) or a `BREAKING CHANGE:` footer.
+- Examples: `feat: Add GetFoo query`, `fix(api): Return 404 when Foo is missing`, `docs: Add clean code rules`.
