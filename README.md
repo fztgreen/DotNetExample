@@ -4,7 +4,7 @@ A reference .NET 10 Web API solution that serves as the standard template for ne
 
 ## Getting Started
 
-Prerequisites: .NET 10 SDK.
+Prerequisites: a .NET 10 SDK in the 10.0.1xx feature band. [`global.json`](global.json) pins it with `rollForward: latestPatch`: any 10.0.1xx patch works, but a newer feature band or major version (e.g. the .NET 11 SDK) is rejected, so every machine builds with the same compiler and analyzers. If `dotnet` reports "A compatible .NET SDK was not found", install it with `winget install Microsoft.DotNet.SDK.10`.
 
 ```bash
 dotnet build DotNetExample.slnx
@@ -13,6 +13,17 @@ dotnet run --project DotNetExample.IoC
 ```
 
 The executable is the **IoC** project, not the Api project. Swagger UI is enabled in the Development environment. Sample requests are in `DotNetExample.Api/DotNetExample.Api.http`.
+
+## Using This Template
+
+This repository is an example, so it deliberately has no CI pipeline. **A real project built from this template must add CI before its first feature.** The style rules and architecture tests only protect `main` if something runs them on every change. Locally, they're easy to skip.
+
+At minimum, the pipeline should:
+
+- **Run `dotnet build` and `dotnet test` on every pull request** and on every push to `main`.
+- **Be a required status check** in branch protection, so a red build can't be merged.
+- **Run on a schedule** (e.g. weekly) as well. `TreatWarningsAsErrors` turns a newly published NuGet security advisory into a build error, so a scheduled run catches it before it breaks an unrelated pull request.
+- **Use the SDK pinned in `global.json`,** the same one developers use, so the analyzers behave the same everywhere. For example, `actions/setup-dotnet` with `global-json-file: global.json`.
 
 ## Architecture
 
@@ -39,6 +50,7 @@ graph TD
 
 ```text
 DotNetExample/
+├── global.json                 # Pins the .NET SDK feature band
 ├── Directory.Build.props       # Shared build settings for every project
 ├── .editorconfig               # Style rules, enforced during build
 ├── DotNetExample.Api/

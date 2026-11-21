@@ -148,6 +148,8 @@ Project files should only hold what's specific to that project: SDK, references,
 
 Rules that a style analyzer can't see are enforced by architecture tests (see [TESTING.md](TESTING.md#architecture-tests)). [REVIEW.md](REVIEW.md#enforced-automatically) lists every rule and what enforces it.
 
+In a real project, CI must run the build and tests on every pull request as a required check (see [Using This Template](README.md#using-this-template)). This example repository intentionally has no CI.
+
 ## Development Workflow
 
 1. **Understand the requirement** before writing anything.

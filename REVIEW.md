@@ -4,7 +4,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 
 ## Enforced Automatically
 
-These rules fail `dotnet build` or `dotnet test`, so a green build covers them. Don't spend review time re-checking them. Instead, make sure nobody weakened the rule that enforces them (e.g. by lowering a severity in `.editorconfig`, adding to a `NoWarn`, or adding an exemption to an architecture test).
+These rules fail `dotnet build` or `dotnet test`, so a green build covers them. In a project built from this template, that green build is the required CI check (see [Using This Template](README.md#using-this-template)). Don't spend review time re-checking them. Instead, make sure nobody weakened the rule that enforces them (e.g. by lowering a severity in `.editorconfig`, adding to a `NoWarn`, or adding an exemption to an architecture test).
 
 | Rule | Enforced by |
 |---|---|
