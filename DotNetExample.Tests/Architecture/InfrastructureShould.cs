@@ -30,6 +30,6 @@ public class InfrastructureShould
         var violations = NamespaceDependencies.Find(layersThatMustUseWrappers, _infrastructureNamespaces, WrappersNamespace);
 
         // Assert
-        violations.Should().BeEmpty();
+        ViolationReport.Of(violations).Should().BeEmpty();
     }
 }

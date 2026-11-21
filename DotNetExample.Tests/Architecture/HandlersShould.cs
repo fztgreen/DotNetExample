@@ -25,7 +25,7 @@ public class HandlersShould
         var handlersWithoutOwnInterface = WithoutOwnInterface(handlers);
 
         // Assert
-        handlersWithoutOwnInterface.Should().BeEmpty();
+        ViolationReport.Of(handlersWithoutOwnInterface).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -38,7 +38,7 @@ public class HandlersShould
         var interfacesWithOtherMethodCounts = WithMethodCountOtherThanOne(handlerInterfaces);
 
         // Assert
-        interfacesWithOtherMethodCounts.Should().BeEmpty();
+        ViolationReport.Of(interfacesWithOtherMethodCounts).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -51,7 +51,7 @@ public class HandlersShould
         var methodsNotReturningTask = NotReturning(commandMethods, typeof(Task));
 
         // Assert
-        methodsNotReturningTask.Should().BeEmpty();
+        ViolationReport.Of(methodsNotReturningTask).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -64,7 +64,7 @@ public class HandlersShould
         var methodsNotReturningTaskOfResult = NotReturning(queryMethods, typeof(Task<>));
 
         // Assert
-        methodsNotReturningTaskOfResult.Should().BeEmpty();
+        ViolationReport.Of(methodsNotReturningTaskOfResult).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -77,7 +77,7 @@ public class HandlersShould
         var badlyNamedMethods = BadlyNamed(handlerMethods);
 
         // Assert
-        badlyNamedMethods.Should().BeEmpty();
+        ViolationReport.Of(badlyNamedMethods).Should().BeEmpty();
     }
 
     private static List<Type> HandlerTypes()

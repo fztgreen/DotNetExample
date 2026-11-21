@@ -3,6 +3,8 @@ using System.Reflection;
 using FluentAssertions;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DotNetExample.Tests.Architecture;
 
@@ -10,7 +12,6 @@ namespace DotNetExample.Tests.Architecture;
 public class CodeShould
 {
     private const string AnonymousTypePrefix = "<>f__AnonymousType";
-    private const string LambdaBodyMarker = ">b__";
 
     private const BindingFlags EveryDeclaredMethod =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
@@ -27,7 +28,7 @@ public class CodeShould
         var violations = NamespaceDependencies.Find(SolutionAssemblies.All, _bannedNamespaces, noExemptNamespace);
 
         // Assert
-        violations.Should().BeEmpty();
+        ViolationReport.Of(violations).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -40,20 +41,20 @@ public class CodeShould
         var anonymousTypes = AnonymousTypesIn(assemblies);
 
         // Assert
-        anonymousTypes.Should().BeEmpty();
+        ViolationReport.Of(anonymousTypes).Should().BeEmpty();
     }
 
     [TestMethod]
-    public void NotUseLambdas()
+    public void KeepLambdasToOneLineExpressions()
     {
         // Arrange
-        var assemblies = SolutionAssemblies.All;
+        var sourceFiles = SourceFiles.ParseAll();
 
         // Act
-        var lambdas = LambdasIn(assemblies);
+        var longLambdas = LongLambdasIn(sourceFiles);
 
         // Assert
-        lambdas.Should().BeEmpty();
+        ViolationReport.Of(longLambdas).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -66,7 +67,7 @@ public class CodeShould
         var methodsMissingSuffix = AsyncMethodsWithoutSuffixIn(assemblies);
 
         // Assert
-        methodsMissingSuffix.Should().BeEmpty();
+        ViolationReport.Of(methodsMissingSuffix).Should().BeEmpty();
     }
 
     private static List<string> AsyncMethodsWithoutSuffixIn(Assembly[] assemblies)
@@ -130,33 +131,48 @@ public class CodeShould
         return anonymousTypes;
     }
 
-    private static List<string> LambdasIn(Assembly[] assemblies)
+    private static List<string> LongLambdasIn(IEnumerable<SyntaxTree> sourceFiles)
     {
-        var lambdas = new List<string>();
-        foreach (var assembly in assemblies)
+        var longLambdas = new List<string>();
+        foreach (var sourceFile in sourceFiles)
         {
-            foreach (var type in assembly.GetTypes())
+            foreach (var anonymousFunction in sourceFile.GetRoot().DescendantNodes().OfType<AnonymousFunctionExpressionSyntax>())
             {
-                foreach (var method in type.GetMethods(EveryDeclaredMethod))
+                var problem = LengthProblem(anonymousFunction);
+                if (problem is not null)
                 {
-                    if (method.Name.Contains(LambdaBodyMarker))
-                    {
-                        lambdas.Add($"{OutermostType(type).FullName}: {method.Name}");
-                    }
+                    longLambdas.Add($"{Location(anonymousFunction)}: {problem}");
                 }
             }
         }
 
-        return lambdas;
+        return longLambdas;
     }
 
-    private static Type OutermostType(Type type)
+    private static string? LengthProblem(AnonymousFunctionExpressionSyntax anonymousFunction)
     {
-        while (type.DeclaringType is not null)
+        if (anonymousFunction is AnonymousMethodExpressionSyntax)
         {
-            type = type.DeclaringType;
+            return "delegate block; use a short lambda or a named method";
         }
 
-        return type;
+        if (anonymousFunction.Block is not null)
+        {
+            return "lambda has a block body; extract it into a named method";
+        }
+
+        var lineSpan = anonymousFunction.GetLocation().GetLineSpan();
+        if (lineSpan.StartLinePosition.Line != lineSpan.EndLinePosition.Line)
+        {
+            return "lambda spans multiple lines; extract it into a named method";
+        }
+
+        return null;
+    }
+
+    private static string Location(SyntaxNode node)
+    {
+        var lineSpan = node.GetLocation().GetLineSpan();
+        return $"{lineSpan.Path}({lineSpan.StartLinePosition.Line + 1})";
     }
 }

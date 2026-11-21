@@ -29,7 +29,7 @@ public class FeatureFoldersShould
         var typesOutsideFeatureFolders = TypesDirectlyInFeatureFolderRoots(assemblies);
 
         // Assert
-        typesOutsideFeatureFolders.Should().BeEmpty();
+        ViolationReport.Of(typesOutsideFeatureFolders).Should().BeEmpty();
     }
 
     private static List<string> TypesDirectlyInFeatureFolderRoots(Assembly[] assemblies)

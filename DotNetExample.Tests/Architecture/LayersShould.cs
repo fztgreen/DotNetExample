@@ -17,7 +17,7 @@ public class LayersShould
         var nonSystemReferences = NamesNotStartingWith(domainReferences, "System");
 
         // Assert
-        nonSystemReferences.Should().BeEmpty();
+        ViolationReport.Of(nonSystemReferences).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -30,7 +30,7 @@ public class LayersShould
         var forbiddenReferences = NamesOf(apiReferences, SolutionAssemblies.DataAccess, SolutionAssemblies.IoC);
 
         // Assert
-        forbiddenReferences.Should().BeEmpty();
+        ViolationReport.Of(forbiddenReferences).Should().BeEmpty();
     }
 
     [TestMethod]
@@ -43,7 +43,7 @@ public class LayersShould
         var forbiddenReferences = NamesOf(dataAccessReferences, SolutionAssemblies.Api, SolutionAssemblies.IoC);
 
         // Assert
-        forbiddenReferences.Should().BeEmpty();
+        ViolationReport.Of(forbiddenReferences).Should().BeEmpty();
     }
 
     private static List<string> NamesNotStartingWith(AssemblyName[] references, string allowedPrefix)
