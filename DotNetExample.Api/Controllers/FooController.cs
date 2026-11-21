@@ -1,5 +1,5 @@
-using DotNetExample.Domain.Commands;
-using DotNetExample.Domain.Queries;
+using DotNetExample.Domain.Commands.Foo;
+using DotNetExample.Domain.Queries.Foo;
 
 using Microsoft.AspNetCore.Mvc;
 

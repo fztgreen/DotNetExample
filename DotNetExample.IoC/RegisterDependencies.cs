@@ -1,8 +1,12 @@
-using DotNetExample.DataAccess;
+using DotNetExample.DataAccess.Cars;
+using DotNetExample.DataAccess.Foo;
 using DotNetExample.DataAccess.Wrappers;
-using DotNetExample.Domain.Commands;
-using DotNetExample.Domain.DataAccess;
-using DotNetExample.Domain.Queries;
+using DotNetExample.Domain.Commands.Cars;
+using DotNetExample.Domain.Commands.Foo;
+using DotNetExample.Domain.DataAccess.Cars;
+using DotNetExample.Domain.DataAccess.Foo;
+using DotNetExample.Domain.Queries.Cars;
+using DotNetExample.Domain.Queries.Foo;
 
 namespace DotNetExample.IoC;
 

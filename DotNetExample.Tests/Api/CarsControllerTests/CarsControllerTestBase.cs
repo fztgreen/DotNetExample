@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using DotNetExample.Api.Models;
+using DotNetExample.Api.Models.Cars;
 using DotNetExample.DataAccess.Wrappers;
-using DotNetExample.Domain.Entities;
+using DotNetExample.Domain.Entities.Cars;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

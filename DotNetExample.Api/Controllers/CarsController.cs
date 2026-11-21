@@ -1,8 +1,8 @@
-using DotNetExample.Api.Models;
-using DotNetExample.Domain.Commands;
-using DotNetExample.Domain.Entities;
-using DotNetExample.Domain.Exceptions;
-using DotNetExample.Domain.Queries;
+using DotNetExample.Api.Models.Cars;
+using DotNetExample.Domain.Commands.Cars;
+using DotNetExample.Domain.Entities.Cars;
+using DotNetExample.Domain.Exceptions.Cars;
+using DotNetExample.Domain.Queries.Cars;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
