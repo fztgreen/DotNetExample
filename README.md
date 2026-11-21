@@ -4,7 +4,7 @@ A reference .NET 10 Web API solution that serves as the standard template for ne
 
 ## Getting Started
 
-Prerequisites: a .NET 10 SDK in the 10.0.1xx feature band. [`global.json`](global.json) pins it with `rollForward: latestPatch`: any 10.0.1xx patch works, but a newer feature band or major version (e.g. the .NET 11 SDK) is rejected, so every machine builds with the same compiler and analyzers. If `dotnet` reports "A compatible .NET SDK was not found", install it with `winget install Microsoft.DotNet.SDK.10`.
+Prerequisites: a .NET 11 SDK in the 11.0.1xx feature band, plus the .NET 10 runtime. The projects target `net10.0` (long-term support) and are built with the newer SDK. [`global.json`](global.json) pins the SDK with `rollForward: latestPatch`: any 11.0.1xx patch works, but another feature band or major version is rejected, so every machine builds with the same compiler and analyzers. If `dotnet` reports "A compatible .NET SDK was not found", install the SDK with `winget install Microsoft.DotNet.SDK.11` (current Visual Studio releases include it).
 
 ```bash
 dotnet build DotNetExample.slnx
@@ -80,7 +80,7 @@ Code is grouped into a folder per feature inside each layer, with namespaces mat
 
 ## Technology
 
-- .NET 10, C# latest, nullable reference types and implicit usings enabled
+- .NET 10 target (`net10.0`), built with the .NET 11 SDK; C# 14, the language version for `net10.0`; nullable reference types and implicit usings enabled
 - `TreatWarningsAsErrors` and build-time `.editorconfig` enforcement in every project, via `Directory.Build.props`
 - MSTest (`MSTest.Sdk`), NSubstitute, FluentAssertions, RandomTestValues
 - ArchUnitNET for architecture tests

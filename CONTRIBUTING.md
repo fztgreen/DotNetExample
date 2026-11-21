@@ -188,7 +188,7 @@ Tests are stricter: only the `// Arrange`, `// Act`, `// Assert` markers are all
 
 Shared settings live in [`Directory.Build.props`](Directory.Build.props) at the repository root, which every project picks up automatically:
 
-- `TargetFramework`, `LangVersion`, `Nullable`, `ImplicitUsings`
+- `TargetFramework`, `Nullable`, `ImplicitUsings`. `LangVersion` is deliberately not set, so C# stays at the version supported for `net10.0` (C# 14) even though the build uses the newer SDK pinned in `global.json`.
 - `TreatWarningsAsErrors`, unconditionally, for every configuration and platform
 - `EnforceCodeStyleInBuild`, so the `.editorconfig` rules marked `error` fail `dotnet build`, not just the IDE
 
