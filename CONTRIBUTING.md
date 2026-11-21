@@ -8,7 +8,7 @@ This solution is the standard template for .NET projects, so every change must p
 - **Api must not reference DataAccess.** Controllers depend only on Domain interfaces.
 - **IoC is the only entry point.** `Program.cs` lives in `DotNetExample.IoC`, never in the Api project.
 - **Centralized DI.** All registrations are composed in `DotNetExample.IoC/RegisterDependencies.cs`. Layers may expose `services.Add[LayerName]()` extension methods (e.g. `ApiConfiguration.AddApi()`), which IoC calls.
-- **Repository + Wrapper pattern.** DataAccess repositories implement Domain repository interfaces and access the underlying store (HTTP, SQL, Mongo, clock, …) only through a wrapper interface such as `IHttpClientWrapper`. This lets tests use real repositories with mocked low-level drivers.
+- **Repository + Wrapper pattern.** DataAccess repositories implement Domain repository interfaces and access the underlying store (HTTP, relational database, document database, clock, …) only through a wrapper interface such as `IHttpClientWrapper`. This lets tests use real repositories with mocked low-level drivers. Wrapper interfaces are named after the *kind* of store, never the product (see [Wrapper Interfaces](#wrapper-interfaces)).
 
 ## Design Patterns
 
@@ -39,6 +39,27 @@ Two exceptions stay flat:
 
 - **Controllers** (`Api/Controllers/CarsController.cs`): a controller already *is* one feature.
 - **Shared infrastructure** that no single feature owns, such as `DataAccess/Wrappers/`.
+
+### Wrapper Interfaces
+
+A wrapper interface has to balance two needs:
+
+- **It should outlive any one technology.** The backing store may change, e.g. from an in-memory store to MongoDB.
+- **Its inputs must be the raw query, so tests can match them exactly** (see [Mock at the boundary](TESTING.md#mock-at-the-boundary-not-above-it)). A raw query is always written for a particular kind of store: SQL text is relational, and a collection plus id or filter is a document lookup.
+
+To meet both, **name and shape the interface after the kind of store, and name the implementation after the technology.**
+
+| Kind of store | Interface | Raw input the repository builds | Implementations |
+|---|---|---|---|
+| Document database | `IDocumentDatabaseWrapper` | Collection name, id, document | `InMemoryDocumentDatabaseWrapper`, `MongoDocumentDatabaseWrapper` |
+| Relational database | `ISqlDatabaseWrapper` | SQL text and parameters | `SqlServerDatabaseWrapper`, `PostgresDatabaseWrapper` |
+| HTTP API | `IHttpClientWrapper` | Full request URI | `HttpClientWrapper` |
+| Clock | `IDateTimeWrapper` | (none) | `SystemDateTimeWrapper` |
+
+- **No product or hosting names in the interface.** `InMemory`, `Mongo`, `SqlServer` and `Cosmos` belong on the implementation class only.
+- **Use the kind's own vocabulary.** A document wrapper has `Find`/`Insert`/`Replace`/`Delete` on a collection; a SQL wrapper takes SQL text. Don't flatten every kind into one generic `IDatabaseWrapper`. To hide whether a call is SQL or a document lookup, it would have to accept domain intent (`GetCar(id)`), which moves the query out of reach of tests.
+- **Changing technology within a kind** (in-memory → MongoDB) means writing a new implementation and changing one line in `RegisterDependencies.cs`. Repositories and tests don't change.
+- **Changing to a different kind** (document → relational) means a different wrapper interface, and the repository changes too, because the query it builds is different. That's expected, because the repository owns the query.
 
 ### Naming
 

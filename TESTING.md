@@ -58,13 +58,14 @@ Every feature must cover these scenarios where applicable:
 
 Mock as little as possible. Put the mock at the lowest point that has to be faked: the call that actually leaves the process (network, database, clock, file system). Everything above that point runs for real in the test: query building, parameter mapping, response parsing.
 
-- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IMongoDbWrapper`, `IDateTimeWrapper`, …), and only at the method that performs the external call.
+- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`, `IDateTimeWrapper`, …), and only at the method that performs the external call.
 - **Forbidden:** mocking Domain repository interfaces (e.g. `IFooRepository`) in logic tests. When testing Commands/Queries, use the **real** repository injected with a **mocked** wrapper.
 - **Forbidden:** mocking domain entities or value objects. Use real instances.
 
 ### Mock at the boundary, not above it
 
-- A wrapper is a thin pass-through to the driver. It takes the final value that goes to the external system (the full request URI, the SQL text, the stored procedure name and its parameters, the Mongo filter) and contains no logic of its own.
+- A wrapper is a thin pass-through to the driver. It takes the final value that goes to the external system (the full request URI, the SQL text, the stored procedure name and its parameters, the document collection and id or filter) and contains no logic of its own.
+- The wrapper interface is named after the kind of store (`IDocumentDatabaseWrapper`), not the technology behind it (`InMemory…`, `Mongo…`), so the same tests keep working when the implementation changes. See [Wrapper Interfaces](CONTRIBUTING.md#wrapper-interfaces).
 - The repository builds that value. Because the test uses the real repository, the query is exercised, not hidden.
 - Set the mock to respond **only to the exact expected value**, e.g. `wrapper.GetAsync($"foo/{id}").Returns(json)`, not `Arg.Any<string>()`. If the repository builds the wrong URI or query, the mock returns nothing and the test fails.
 - **Forbidden:** wrapper methods that take domain intent instead of the raw call, e.g. `GetFooAsync(id)` or `ExecuteGetFooProc(id)`. They move the query out of reach of tests.

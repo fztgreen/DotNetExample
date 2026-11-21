@@ -27,7 +27,8 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 
 `CarsController` is the reference CRUD feature: copy its shape for new resources.
 
-- Tests are integration tests over `WebApplicationFactory<Program>` (see `Tests/Api/CarsControllerTests/CarsControllerTestBase.cs`), so `[ApiController]` validation (400) and unhandled exceptions (500) are exercised for real. Only `IInMemoryDatabaseWrapper` is replaced with a substitute.
+- Tests are integration tests over `WebApplicationFactory<Program>` (see `Tests/Api/CarsControllerTests/CarsControllerTestBase.cs`), so `[ApiController]` validation (400) and unhandled exceptions (500) are exercised for real. Only `IDocumentDatabaseWrapper` is replaced with a substitute.
+- Storage goes through `IDocumentDatabaseWrapper` (named for the kind of store); `InMemoryDocumentDatabaseWrapper` is just the current implementation. See [Wrapper Interfaces](CONTRIBUTING.md#wrapper-interfaces).
 - Commands return `Task`, so "not found" on update/delete is signalled with `CarNotFoundException` and mapped to 404 in the controller.
 - FluentAssertions is pinned to 7.x: 8.x requires a commercial license.
 
