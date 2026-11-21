@@ -56,9 +56,19 @@ Every feature must cover these scenarios where applicable:
 
 ## Mocking Rules
 
-- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IMongoDbWrapper`, `IDateTimeWrapper`, …).
+Mock as little as possible. Put the mock at the lowest point that has to be faked: the call that actually leaves the process (network, database, clock, file system). Everything above that point runs for real in the test: query building, parameter mapping, response parsing.
+
+- **Allowed:** mocking infrastructure wrappers (`IHttpClientWrapper`, `IMongoDbWrapper`, `IDateTimeWrapper`, …), and only at the method that performs the external call.
 - **Forbidden:** mocking Domain repository interfaces (e.g. `IFooRepository`) in logic tests. When testing Commands/Queries, use the **real** repository injected with a **mocked** wrapper.
 - **Forbidden:** mocking domain entities or value objects. Use real instances.
+
+### Mock at the boundary, not above it
+
+- A wrapper is a thin pass-through to the driver. It takes the final value that goes to the external system (the full request URI, the SQL text, the stored procedure name and its parameters, the Mongo filter) and contains no logic of its own.
+- The repository builds that value. Because the test uses the real repository, the query is exercised, not hidden.
+- Set the mock to respond **only to the exact expected value**, e.g. `wrapper.GetAsync($"foo/{id}").Returns(json)`, not `Arg.Any<string>()`. If the repository builds the wrong URI or query, the mock returns nothing and the test fails.
+- **Forbidden:** wrapper methods that take domain intent instead of the raw call, e.g. `GetFooAsync(id)` or `ExecuteGetFooProc(id)`. They move the query out of reach of tests.
+- **Forbidden:** `Arg.Any<T>()` for the value that identifies the call (URI, query, procedure name). Use it only for arguments that don't matter to the behavior under test, like a `CancellationToken`.
 
 ## Assertions
 
@@ -72,7 +82,7 @@ Every feature must cover these scenarios where applicable:
 
 ## File Organization & Naming
 
-- Pattern: `DotNetExample.Tests/<Namespace>/<ClassName>Tests/<MethodName>_<Scenario>.cs`
+- Pattern: `DotNetExample.Tests/<Namespace>/<ClassName>Tests/<MethodName>Should_<Scenario>.cs`
 - Examples:
   - `Api/FooControllerTests/GetShould_ReturnOk.cs`
   - `Api/FooControllerTests/GetShould_Throw_WhenInvalid.cs`

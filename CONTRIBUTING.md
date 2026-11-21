@@ -26,6 +26,26 @@ All business logic is split into Commands (writes) and Queries (reads):
 - Interfaces are PascalCase prefixed with `I` (e.g. `IFooRepository`).
 - Async methods end with `Async` (e.g. `GetFooAsync`).
 
+## Clean Code
+
+Code is read far more often than it is written, so optimize for the reader.
+
+### Readability
+
+- **Code should read like a sentence.** A caller should be able to follow the flow from method and variable names alone, e.g. `if (order.IsOverdue()) await NotifyCustomerAsync(order);`.
+- **Keep functions small.** Each function does one thing at one level of abstraction. When a function needs a section break, or you're tempted to explain a block, extract it into a well-named method.
+- **Choose descriptive names over short ones.** Names say what something does or represents (`CalculateShippingCost`, `activeCustomers`), not how it's built (`DoWork`, `list2`, `tmp`). Avoid abbreviations and generic names like `Helper`, `Manager`, or `Data`.
+
+### Comments
+
+Comments should almost never be needed. If code needs a comment to explain *what* it does, rename or extract until it doesn't.
+
+- **Allowed: comments that explain *why*.** Use them for code that looks wrong or surprising but has to be that way, e.g. unusual startup configuration that works around a parsing issue, or an ordering that a library requires. Link to the issue or docs where possible.
+- **Allowed: documentation on public-facing APIs.** XML doc comments (`///`) on controller actions (they feed Swagger) and on public members of packages consumed by others, such as NuGet libraries.
+- **Forbidden:** comments that restate the code, commented-out code, and change-log comments. Git keeps the history.
+
+Tests are stricter: only the `// Arrange`, `// Act`, `// Assert` markers are allowed (see [TESTING.md](TESTING.md#test-style)).
+
 ## Build Configuration
 
 Every project must set:
