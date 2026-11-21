@@ -5,7 +5,7 @@ namespace DotNetExample.Tests.Architecture;
 
 public static class SourceFiles
 {
-    private const string SolutionFileName = "DotNetExample.slnx";
+    public const string SolutionFileName = "DotNetExample.slnx";
 
     private static readonly CSharpParseOptions _parseOptions = new(LanguageVersion.Preview);
 
@@ -26,7 +26,7 @@ public static class SourceFiles
         }
     }
 
-    private static string RepositoryRoot()
+    public static string RepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (!File.Exists(Path.Combine(directory.FullName, SolutionFileName)))
