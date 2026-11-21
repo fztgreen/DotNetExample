@@ -4,9 +4,9 @@ public class HttpClientWrapper : IHttpClientWrapper
 {
     private readonly HttpClient _httpClient;
 
-    public HttpClientWrapper(HttpClient httpClient)
+    public HttpClientWrapper(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient();
     }
 
     public Task<string> GetAsync(string requestUri)

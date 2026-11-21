@@ -11,6 +11,7 @@ public partial class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddHttpClient();
 
         RegisterDependencies.Register(builder.Services);
 
