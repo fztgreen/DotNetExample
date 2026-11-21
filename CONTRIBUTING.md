@@ -37,6 +37,25 @@ A handler has one public method. Its name is the word that **completes the handl
 - **Be specific.** Never use a generic name like `ExecuteAsync`, `HandleAsync` or `RunAsync`. It says nothing the handler's type doesn't already say.
 - **Don't repeat yourself.** The noun is already in the handler name and the argument, so `ByAsync(id)`, not `ByIdAsync(id)`; `WithAsync(car)`, not `WithCarAsync(car)`.
 
+### API Models
+
+The API layer receives and returns its own types, never Domain types. Then the JSON contract clients depend on and the domain model can change independently: renaming a domain property doesn't break clients, and an API change doesn't leak into the domain.
+
+- **Requests** are `<Name>Request` records in `Api/Models/<Feature>`, carrying the validation attributes. They map to the domain with an instance method: `request.ToCar(id)`.
+- **Responses** are `<Name>Response` records in the same folder. They're built from the domain with a static factory: `CarResponse.From(car)`.
+- **Enums too.** The API declares its own (`Api.Models.Cars.EngineShape`) and maps it to the domain enum with an explicit `switch`, never a cast. That way, renaming or reordering a domain enum can't silently change the API.
+- Controller action parameters, `[ProducesResponseType]` types, and the public properties of API models may only use API or .NET types. `Architecture/ApiShould` enforces this.
+
+```csharp
+// Don't: the domain entity is the API contract
+[ProducesResponseType<Car>(StatusCodes.Status200OK)]
+return Ok(car);
+
+// Do: map at the boundary
+[ProducesResponseType<CarResponse>(StatusCodes.Status200OK)]
+return Ok(CarResponse.From(car));
+```
+
 ### Feature Folders
 
 Inside each layer, group code into a folder per feature, and make the namespace match the folder path. A reader looking for everything about cars finds it under a `Cars/` folder in every layer.

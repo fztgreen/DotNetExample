@@ -32,6 +32,7 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 
 - Tests are integration tests over `WebApplicationFactory<Program>` (see `Tests/Api/CarsControllerTests/CarsControllerTestBase.cs`), so `[ApiController]` validation (400) and unhandled exceptions (500) are exercised for real. Only `IDocumentDatabaseWrapper` is replaced with a substitute.
 - Storage goes through `IDocumentDatabaseWrapper` (named for the kind of store); `InMemoryDocumentDatabaseWrapper` is just the current implementation. See [Wrapper Interfaces](CONTRIBUTING.md#wrapper-interfaces).
+- The API speaks only its own models: `CarRequest` in, `CarResponse` out, and its own `EngineShape` enum. Domain types never cross the API boundary (see [API Models](CONTRIBUTING.md#api-models)).
 - Commands return `Task`, so "not found" on update/delete is signalled with `CarNotFoundException` and mapped to 404 in the controller.
 - FluentAssertions is pinned to 7.x: 8.x requires a commercial license.
 

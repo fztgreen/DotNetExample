@@ -17,6 +17,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 | No anonymous types; lambdas are a single one-line expression; no `delegate { … }` blocks | `Architecture/CodeShould` |
 | Async methods end with `Async` (except controller actions and test methods) | `Architecture/CodeShould.NameAsyncMethodsWithAsyncSuffix` |
 | No types directly in a feature folder root (e.g. `Domain/Commands/`) | `Architecture/FeatureFoldersShould` |
+| The API receives and returns only API models, never Domain types | `Architecture/ApiShould` |
 | Every wrapper implementation has an integration test | `IntegrationTests/Architecture/WrappersShould` |
 | Handlers implement their own interface with one method; Commands return `Task`, Queries return `Task<T>`; no generic method names or repeated nouns | `Architecture/HandlersShould` |
 

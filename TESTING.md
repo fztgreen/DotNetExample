@@ -105,6 +105,7 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 | `InfrastructureShould.cs` | Only `DataAccess/Wrappers` depends on infrastructure namespaces (uses ArchUnitNET to read method bodies) |
 | `CodeShould.cs` | Banned libraries, no anonymous types, lambdas limited to one-line expressions, `Async` suffix |
 | `FeatureFoldersShould.cs` | No types directly in a feature folder root |
+| `ApiShould.cs` | Controllers and API models expose no Domain types |
 | `HandlersShould.cs` | Handler interface, method count, return types, and method naming |
 
 - Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is an exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
