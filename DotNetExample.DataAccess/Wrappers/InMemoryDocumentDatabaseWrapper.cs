@@ -37,11 +37,6 @@ public class InMemoryDocumentDatabaseWrapper : IDocumentDatabaseWrapper
 
     private ConcurrentDictionary<Guid, object> Collection(string collectionName)
     {
-        return _collections.GetOrAdd(collectionName, CreateEmptyCollection);
-    }
-
-    private static ConcurrentDictionary<Guid, object> CreateEmptyCollection(string collectionName)
-    {
-        return new ConcurrentDictionary<Guid, object>();
+        return _collections.GetOrAdd(collectionName, _ => new ConcurrentDictionary<Guid, object>());
     }
 }

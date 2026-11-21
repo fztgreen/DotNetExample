@@ -5,7 +5,6 @@ using DotNetExample.Api.Models.Cars;
 using DotNetExample.DataAccess.Wrappers;
 using DotNetExample.Domain.Entities.Cars;
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ public abstract class CarsControllerTestBase
     {
         DocumentDatabase = Substitute.For<IDocumentDatabaseWrapper>();
         _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(ConfigureTestServer);
+            .WithWebHostBuilder(builder => builder.ConfigureTestServices(ReplaceDocumentDatabase));
         Client = _factory.CreateClient();
     }
 
@@ -86,11 +85,6 @@ public abstract class CarsControllerTestBase
                 Shape = RandomValue.Enum<EngineShape>()
             }
         };
-    }
-
-    private void ConfigureTestServer(IWebHostBuilder builder)
-    {
-        builder.ConfigureTestServices(ReplaceDocumentDatabase);
     }
 
     private void ReplaceDocumentDatabase(IServiceCollection services)
