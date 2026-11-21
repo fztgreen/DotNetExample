@@ -18,6 +18,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 - [ ] Handlers are named `VerbNoun`, implement their own interface, and take repository interfaces through the constructor.
 - [ ] Interfaces are prefixed with `I`; async methods end with `Async`.
 - [ ] Functions are small and names are descriptive; code reads without explanation.
+- [ ] No anonymous types or anonymous functions (lambdas, `delegate { … }`), in production code or tests, and no string-keyed dictionaries standing in for an anonymous type; use named records and method groups instead.
 - [ ] Comments only explain *why*, or document public-facing APIs; no commented-out code.
 - [ ] New projects enable `Nullable`, `ImplicitUsings`, and `TreatWarningsAsErrors`.
 - [ ] The change solves the current requirement only, with no speculative code.

@@ -76,6 +76,27 @@ Code is read far more often than it is written, so optimize for the reader.
 - **Keep functions small.** Each function does one thing at one level of abstraction. When a function needs a section break, or you're tempted to explain a block, extract it into a well-named method.
 - **Choose descriptive names over short ones.** Names say what something does or represents (`CalculateShippingCost`, `activeCustomers`), not how it's built (`DoWork`, `list2`, `tmp`). Avoid abbreviations and generic names like `Helper`, `Manager`, or `Data`.
 
+### No Anonymous Types or Functions
+
+Everything gets a name. Never use anonymous types or anonymous functions (lambdas and `delegate { … }` blocks), in production code or in tests.
+
+- **Instead of an anonymous type,** declare a named record whose properties give the shape (e.g. `record CarRouteValues(Guid Id)`).
+- **String-keyed bags count as anonymous.** `new RouteValueDictionary { ["id"] = car.Id }`, `new Dictionary<string, object> { … }` and similar initializers just rebuild an anonymous object with magic-string keys. Its shape is still undeclared, so declare a record instead.
+- **Instead of a lambda,** write a named method and pass it as a method group, or use a local function.
+- **Why:** a name says *what* the code does, so the call reads like a sentence (`AddJsonOptions(SerializeEnumsAsStrings)`) without the reader decoding the lambda body. Named methods also show up by name in stack traces and can be reused.
+- Expression-bodied members (`public int Count => _items.Count;`) are not anonymous functions. They are named members and are allowed.
+
+```csharp
+// Don't
+services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+return CreatedAtAction(nameof(Get), new { id = car.Id }, car);
+return CreatedAtAction(nameof(Get), new RouteValueDictionary { ["id"] = car.Id }, car);
+
+// Do
+services.AddControllers().AddJsonOptions(SerializeEnumsAsStrings);
+return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), car);
+```
+
 ### Comments
 
 Comments should almost never be needed. If code needs a comment to explain *what* it does, rename or extract until it doesn't.

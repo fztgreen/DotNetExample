@@ -80,6 +80,7 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 
 - **Required:** `// Arrange`, `// Act`, `// Assert` comments delimiting each phase.
 - **Forbidden:** other inline comments explaining what or why. Extract logic into well-named private methods instead.
+- **Forbidden:** anonymous types and lambdas, including in test data (see [No Anonymous Types or Functions](CONTRIBUTING.md#no-anonymous-types-or-functions)). For data-driven cases that vary by behavior, pass named methods as method groups, e.g. `("Make empty", WithEmptyMake)`.
 
 ## File Organization & Naming
 
