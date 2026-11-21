@@ -32,7 +32,7 @@ public class CreateShould : CarsControllerTestBase
     }
 
     [TestMethod]
-    [DynamicData(nameof(InvalidCarRequests))]
+    [DynamicData(nameof(InvalidCarRequests.All), typeof(InvalidCarRequests))]
     public async Task ReturnBadRequest_WhenRequestIsInvalid(string invalidField, Func<CarRequest, CarRequest> invalidate)
     {
         // Arrange

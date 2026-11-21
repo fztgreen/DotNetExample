@@ -52,7 +52,7 @@ public class CarsController : ControllerBase
     {
         var car = request.ToCar(Guid.NewGuid());
         await _addCar.ExecuteAsync(car);
-        return CreatedAtAction(nameof(Get), new { id = car.Id }, car);
+        return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), car);
     }
 
     [HttpPut("{id:guid}")]
