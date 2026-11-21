@@ -3,7 +3,9 @@
 ## Running Tests
 
 ```bash
-dotnet test DotNetExample.slnx
+dotnet test DotNetExample.slnx                                                     # unit and integration tests
+dotnet test DotNetExample.Tests                                                    # unit tests only (fast; use with dotnet watch)
+dotnet test DotNetExample.IntegrationTests                                         # wrapper integration tests only
 dotnet test --filter "FullyQualifiedName~FooControllerTests.GetShould.ReturnOk"   # single test
 ```
 
@@ -65,7 +67,7 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 
 ### Mock at the boundary, not above it
 
-- A wrapper is a thin pass-through to the driver. It takes the final value that goes to the external system (the full request URI, the SQL text, the stored procedure name and its parameters, the document collection and id or filter) and contains no logic of its own.
+- A wrapper is a thin pass-through to the driver. It takes the final value that goes to the external system (the full request URI, the SQL text, the stored procedure name and its parameters, the document collection and id or filter). It contains no business logic and builds no queries. The only thing it may do is translate the driver's result into the wrapper's contract, e.g. turning MongoDB's matched count into the `bool` that `Replace` returns. That translation is covered by the wrapper's [integration tests](#integration-tests), not by unit tests.
 - The wrapper interface is named after the kind of store (`IDocumentDatabaseWrapper`), not the technology behind it (`InMemory…`, `Mongo…`), so the same tests keep working when the implementation changes. See [Wrapper Interfaces](CONTRIBUTING.md#wrapper-interfaces).
 - The repository builds that value. Because the test uses the real repository, the query is exercised, not hidden.
 - Set the mock to respond **only to the exact expected value**, e.g. `wrapper.GetAsync($"foo/{id}").Returns(json)`, not `Arg.Any<string>()`. If the repository builds the wrong URI or query, the mock returns nothing and the test fails.
@@ -105,7 +107,35 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 | `FeatureFoldersShould.cs` | No types directly in a feature folder root |
 | `HandlersShould.cs` | Handler interface, method count, return types, and method naming |
 
-- Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is the one exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
+- Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is an exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
 - Each test collects *every* violation and asserts `ViolationReport.Of(violations).Should().BeEmpty()`, so one run reports all offending types or methods by name. Don't assert `violations.Should().BeEmpty()` directly: on a list, FluentAssertions names only the first offender.
 - **When you add a convention that can be checked mechanically, add a rule here.** Before trusting it, prove it can fail: plant a violation, watch the test fail with a message that names it, then remove the violation. A rule that has never failed may not be checking anything.
 - Anonymous types are detected in the compiled assemblies, by the names the compiler generates for them (`<>f__AnonymousType…`). Lambda length can't be seen after compilation, so `CodeShould.KeepLambdasToOneLineExpressions` parses the source files with Roslyn (`Microsoft.CodeAnalysis.CSharp`). It flags block-bodied lambdas, lambdas that span lines, and `delegate { … }` blocks, and reports each by file and line.
+
+## Integration Tests
+
+Unit tests mock wrappers, so nothing in `DotNetExample.Tests` proves a wrapper actually works. Every mocked setup encodes an assumption about the real dependency, e.g. `Replace(...).Returns(true)` assumes `true` means "found and replaced". `DotNetExample.IntegrationTests` checks those assumptions by running each wrapper against its real dependency.
+
+### Contract tests
+
+Test each wrapper **interface** as a contract, written once and run against every implementation:
+
+- `<WrapperInterface>Contract` (e.g. `DocumentDatabaseWrapperContract`) is an abstract class holding the `[TestMethod]`s. Together they describe the behavior that repositories and unit-test mocks rely on: what's returned when something is missing, what throws, and what's isolated from what. It creates the wrapper through an abstract method and has no `[TestClass]` attribute.
+- `<Implementation>Should` (e.g. `InMemoryDocumentDatabaseWrapperShould`) is a `[TestClass]` that inherits the contract and supplies a real instance wired to a real dependency. MSTest runs every inherited test against it.
+- **A new implementation is done when it passes the existing contract.** That's what makes swapping technology within a kind safe (see [Wrapper Interfaces](CONTRIBUTING.md#wrapper-interfaces)). If the new driver behaves differently, the wrapper translates the result into the contract; the contract doesn't change to fit the driver.
+- When a unit test starts relying on a wrapper behavior the contract doesn't cover yet, add that case to the contract.
+- `WrappersShould.HaveAnIntegrationTest` fails if any class in `DataAccess/Wrappers` lacks a matching `<Implementation>Should` class.
+
+These files follow the contract instead of the `<MethodName>Should.cs` pattern. A contract describes how several methods interact (insert, then find), so splitting it per method would scatter one specification across many files.
+
+### Real dependencies, local and disposable
+
+| Dependency | Use |
+|---|---|
+| In-memory store, clock | The real instance; nothing external to start |
+| HTTP API | An in-process Kestrel server on a random local port, serving known responses. Never call real third-party APIs. |
+| SQL Server, PostgreSQL, MongoDB, … | [Testcontainers](https://dotnet.testcontainers.org/): one throwaway container per test class or assembly, started in `[ClassInitialize]`/`[AssemblyInitialize]` |
+
+- **Isolate every test.** Use random collection, table or database names from `RandomTestValues`, so tests can run in parallel against a shared container.
+- **Mock nothing.** An integration test that mocks a dependency is a unit test with extra steps.
+- **Keep them in their own project.** `DotNetExample.Tests` stays fast and Docker-free for `dotnet watch test`. In a real project, CI runs `DotNetExample.IntegrationTests` as its own job on agents with Docker.

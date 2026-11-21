@@ -44,7 +44,8 @@ graph TD
 | `DotNetExample.DataAccess` | Repository implementations, infrastructure wrappers | Domain |
 | `DotNetExample.Api` | Controllers, DTOs, `ApiConfiguration.cs` (no `Program.cs`) | Domain |
 | `DotNetExample.IoC` | `Program.cs` entry point, `RegisterDependencies.cs` DI wiring | Api, DataAccess, Domain |
-| `DotNetExample.Tests` | MSTest unit and integration tests | Api, Domain (DataAccess for integration tests if needed) |
+| `DotNetExample.Tests` | MSTest unit tests (API tests over `WebApplicationFactory` with mocked wrappers) and architecture tests | Everything |
+| `DotNetExample.IntegrationTests` | Wrapper contract tests against real dependencies | DataAccess |
 
 ### Directory Layout
 
@@ -67,9 +68,12 @@ DotNetExample/
 │   ├── Entities/Cars/          # Car, Engine, TireSize, EngineShape
 │   └── Exceptions/Cars/        # CarNotFoundException
 ├── DotNetExample.IoC/          # Program.cs, RegisterDependencies.cs
-└── DotNetExample.Tests/
-    ├── Api/CarsControllerTests/  # One file per method: GetShould.cs, CreateShould.cs, …
-    └── Architecture/             # Convention rules: LayersShould.cs, HandlersShould.cs, …
+├── DotNetExample.Tests/
+│   ├── Api/CarsControllerTests/  # One file per method: GetShould.cs, CreateShould.cs, …
+│   └── Architecture/             # Convention rules: LayersShould.cs, HandlersShould.cs, …
+└── DotNetExample.IntegrationTests/
+    ├── Wrappers/                 # <Interface>Contract.cs + <Implementation>Should.cs
+    └── Architecture/             # WrappersShould.cs: every wrapper has an integration test
 ```
 
 Code is grouped into a folder per feature inside each layer, with namespaces matching the folders. See [Feature Folders](CONTRIBUTING.md#feature-folders).

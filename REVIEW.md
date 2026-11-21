@@ -17,6 +17,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 | No anonymous types; lambdas are a single one-line expression; no `delegate { … }` blocks | `Architecture/CodeShould` |
 | Async methods end with `Async` (except controller actions and test methods) | `Architecture/CodeShould.NameAsyncMethodsWithAsyncSuffix` |
 | No types directly in a feature folder root (e.g. `Domain/Commands/`) | `Architecture/FeatureFoldersShould` |
+| Every wrapper implementation has an integration test | `IntegrationTests/Architecture/WrappersShould` |
 | Handlers implement their own interface with one method; Commands return `Task`, Queries return `Task<T>`; no generic method names or repeated nouns | `Architecture/HandlersShould` |
 
 ## Architecture
@@ -48,6 +49,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 - [ ] Test files follow `<Namespace>/<ClassName>Tests/<MethodName>Should.cs`, one file per method under test, with shared setup in a `<ClassName>TestBase` rather than duplicated.
 - [ ] Refactor-only changes leave existing Assert statements untouched.
 - [ ] A new convention that can be checked mechanically comes with an architecture test (see [TESTING.md](TESTING.md#architecture-tests)).
+- [ ] A wrapper behavior that unit-test mocks rely on is covered by the wrapper's contract, and a new wrapper implementation passes the existing contract unchanged (see [TESTING.md](TESTING.md#integration-tests)).
 
 ## Build
 
