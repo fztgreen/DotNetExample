@@ -1,42 +1,40 @@
-using DotNetExample.Api.Controllers;
-using DotNetExample.Domain.Commands.Foo;
-using DotNetExample.Domain.Queries.Foo;
-
 using Microsoft.AspNetCore.Mvc;
 
 using NSubstitute;
 
+using RandomTestValues;
+
 namespace DotNetExample.Tests.Api.FooControllerTests;
 
 [TestClass]
-public class GetShould
+public class GetShould : FooControllerTestBase
 {
-    private IGetFoo _getFoo;
-    private ISetFoo _setFoo;
-    private FooController _sut;
-
-    [TestInitialize]
-    public void TestInitialize()
-    {
-        _getFoo = Substitute.For<IGetFoo>();
-        _setFoo = Substitute.For<ISetFoo>();
-        _sut = new FooController(_getFoo, _setFoo);
-    }
-
     [TestMethod]
     public async Task ReturnOk()
     {
         // Arrange
         var expected = "Hello from FooController!";
-        _getFoo.CurrentAsync().Returns(expected);
+        GetFoo.CurrentAsync().Returns(expected);
 
         // Act
-        var result = await _sut.Get();
+        var result = await Sut.Get();
 
         // Assert
         Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         var okResult = (OkObjectResult)result;
         Assert.AreEqual(expected, okResult.Value);
-        await _setFoo.Received(1).ToAsync(expected);
+    }
+
+    [TestMethod]
+    public async Task NotWriteFoo()
+    {
+        // Arrange
+        GetFoo.CurrentAsync().Returns(RandomValue.String());
+
+        // Act
+        await Sut.Get();
+
+        // Assert
+        await SetFoo.DidNotReceiveWithAnyArgs().ToAsync(default!);
     }
 }

@@ -38,7 +38,7 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 
 ## Known Gaps
 
-The original `FooControllerTests` still uses MSTest `Assert` and mocks Domain handlers; it predates the current standards.
+`FooController` is the original minimal example and is kept on purpose: `GET api/foo` reads through `GetFoo`, and `PUT api/foo` writes through `SetFoo`. Its tests predate the current standards: they mock Domain handlers instead of wrappers, and `GetShould.ReturnOk` uses MSTest `Assert`. `FooRepository` also points at a real `https://foo.com`. Copy `CarsController` for new features, not Foo.
 
 ## Project Docs
 

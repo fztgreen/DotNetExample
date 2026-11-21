@@ -22,7 +22,13 @@ public class FooController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var result = await _getFoo.CurrentAsync();
-        await _setFoo.ToAsync(result);
         return Ok(result);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody] string value)
+    {
+        await _setFoo.ToAsync(value);
+        return NoContent();
     }
 }
