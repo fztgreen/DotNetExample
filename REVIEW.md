@@ -16,6 +16,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 
 - [ ] Writes are Commands in `Domain/Commands/<Feature>` returning `Task`; reads are Queries in `Domain/Queries/<Feature>` returning `Task<T>`.
 - [ ] Handlers are named `VerbNoun`, implement their own interface, and take repository interfaces through the constructor.
+- [ ] Handler methods complete the handler name as a sentence (`_getCar.ByAsync(id)`, `_updateCar.WithAsync(car)`): no generic `ExecuteAsync`/`HandleAsync`, and no repeated nouns (`ByIdAsync`, `WithCarAsync`).
 - [ ] Interfaces are prefixed with `I`; async methods end with `Async`.
 - [ ] Functions are small and names are descriptive; code reads without explanation.
 - [ ] No anonymous types or anonymous functions (lambdas, `delegate { … }`), in production code or tests, and no string-keyed dictionaries standing in for an anonymous type; use named records and method groups instead.

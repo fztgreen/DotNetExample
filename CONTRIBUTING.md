@@ -21,6 +21,22 @@ All business logic is split into Commands (writes) and Queries (reads):
 - Name handlers `VerbNoun` (e.g. `GetCar`, `AddCar`), each implementing its own interface (`IGetCar`).
 - Inject repository interfaces through the constructor.
 
+#### Handler method names
+
+A handler has one public method. Its name is the word that **completes the handler's name as a sentence**, usually a preposition with the argument as its object, followed by `Async`. Read the call aloud: it should say exactly what happens.
+
+| Call | Reads as |
+|---|---|
+| `_getCar.ByAsync(id)` | get car by id |
+| `_getCars.AllAsync()` | get all cars |
+| `_addCar.WithAsync(car)` | add car with these details |
+| `_updateCar.WithAsync(car)` | update car with these details |
+| `_deleteCar.ByAsync(id)` | delete car by id |
+| `_setFoo.ToAsync(value)` | set foo to value |
+
+- **Be specific.** Never use a generic name like `ExecuteAsync`, `HandleAsync` or `RunAsync`. It says nothing the handler's type doesn't already say.
+- **Don't repeat yourself.** The noun is already in the handler name and the argument, so `ByAsync(id)`, not `ByIdAsync(id)`; `WithAsync(car)`, not `WithCarAsync(car)`.
+
 ### Feature Folders
 
 Inside each layer, group code into a folder per feature, and make the namespace match the folder path. A reader looking for everything about cars finds it under a `Cars/` folder in every layer.
@@ -64,7 +80,7 @@ To meet both, **name and shape the interface after the kind of store, and name t
 ### Naming
 
 - Interfaces are PascalCase prefixed with `I` (e.g. `IFooRepository`).
-- Async methods end with `Async` (e.g. `GetFooAsync`).
+- Async methods end with `Async` (e.g. `GetFooAsync`), including handler methods (`_getCar.ByAsync(id)`).
 
 ## Clean Code
 
