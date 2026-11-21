@@ -91,7 +91,9 @@ To meet both, **name and shape the interface after the kind of store, and name t
 ### Naming
 
 - Interfaces are PascalCase prefixed with `I` (e.g. `IFooRepository`).
-- Async methods end with `Async` (e.g. `GetFooAsync`), including handler methods (`_getCar.ByAsync(id)`).
+- Async methods end with `Async` (e.g. `GetFooAsync`), including handler methods (`_getCar.ByAsync(id)`). Two exceptions:
+  - **Controller actions** (`Get`, `Create`, …) are named after the HTTP operation. ASP.NET Core strips `Async` from action names by default ([`SuppressAsyncSuffixInActionNames`](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.mvc.mvcoptions.suppressasyncsuffixinactionnames)), so an action named `GetAsync` breaks `CreatedAtAction(nameof(GetAsync), …)` at runtime.
+  - **Test methods** describe a scenario (`ReturnOk_WhenCarExists`), not an operation.
 
 ## Clean Code
 
@@ -136,13 +138,15 @@ Tests are stricter: only the `// Arrange`, `// Act`, `// Assert` markers are all
 
 ## Build Configuration
 
-Every project must set:
+Shared settings live in [`Directory.Build.props`](Directory.Build.props) at the repository root, which every project picks up automatically:
 
-```xml
-<ImplicitUsings>enable</ImplicitUsings>
-<Nullable>enable</Nullable>
-<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-```
+- `TargetFramework`, `LangVersion`, `Nullable`, `ImplicitUsings`
+- `TreatWarningsAsErrors`, unconditionally, for every configuration and platform
+- `EnforceCodeStyleInBuild`, so the `.editorconfig` rules marked `error` fail `dotnet build`, not just the IDE
+
+Project files should only hold what's specific to that project: SDK, references, and packages. Don't redefine shared settings in a project, and don't silence a rule with `NoWarn` or a lower `.editorconfig` severity without a *why* comment.
+
+Rules that a style analyzer can't see are enforced by architecture tests (see [TESTING.md](TESTING.md#architecture-tests)). [REVIEW.md](REVIEW.md#enforced-automatically) lists every rule and what enforces it.
 
 ## Development Workflow
 

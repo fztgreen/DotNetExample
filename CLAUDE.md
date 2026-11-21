@@ -7,8 +7,9 @@ This is a reference/template .NET 10 solution demonstrating Clean Architecture +
 ## Commands
 
 ```bash
-dotnet build DotNetExample.slnx              # warnings are errors in every project
+dotnet build DotNetExample.slnx              # warnings and .editorconfig style errors fail the build
 dotnet test DotNetExample.slnx
+dotnet test --filter "FullyQualifiedName~Architecture"   # architecture rules only
 dotnet test --filter "FullyQualifiedName~FooControllerTests.GetShould.ReturnOk"   # single test
 dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 ```
@@ -21,6 +22,7 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 - **Feature folders.** Put new code in a per-feature folder inside its layer (e.g. `Domain/Commands/Cars/`) with a matching namespace. Only controllers and shared wrappers stay flat.
 - **One test file per method under test** (`GetShould.cs`). Before adding one, read the existing `<ClassName>TestBase` to avoid redefining `[TestInitialize]`.
 - Register every new handler/repository/wrapper in `DotNetExample.IoC/RegisterDependencies.cs`.
+- **Never weaken enforcement to get green.** If a style error or an architecture test fails, fix the code. Don't lower an `.editorconfig` severity, add a `NoWarn`, or add an exemption to `Tests/Architecture/` unless the user agrees.
 - **Use Conventional Commits** for commit messages and PR titles (see [CONTRIBUTING.md](CONTRIBUTING.md#commit-messages)).
 
 ## Reference Implementation

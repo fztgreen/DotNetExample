@@ -39,6 +39,8 @@ graph TD
 
 ```text
 DotNetExample/
+├── Directory.Build.props       # Shared build settings for every project
+├── .editorconfig               # Style rules, enforced during build
 ├── DotNetExample.Api/
 │   ├── Controllers/            # CarsController.cs (flat: one controller per feature)
 │   ├── Models/Cars/            # Request/response DTOs
@@ -54,7 +56,8 @@ DotNetExample/
 │   └── Exceptions/Cars/        # CarNotFoundException
 ├── DotNetExample.IoC/          # Program.cs, RegisterDependencies.cs
 └── DotNetExample.Tests/
-    └── Api/CarsControllerTests/  # One file per method: GetShould.cs, CreateShould.cs, …
+    ├── Api/CarsControllerTests/  # One file per method: GetShould.cs, CreateShould.cs, …
+    └── Architecture/             # Convention rules: LayersShould.cs, HandlersShould.cs, …
 ```
 
 Code is grouped into a folder per feature inside each layer, with namespaces matching the folders. See [Feature Folders](CONTRIBUTING.md#feature-folders).
@@ -62,8 +65,9 @@ Code is grouped into a folder per feature inside each layer, with namespaces mat
 ## Technology
 
 - .NET 10, C# latest, nullable reference types and implicit usings enabled
-- `TreatWarningsAsErrors` in every project
+- `TreatWarningsAsErrors` and build-time `.editorconfig` enforcement in every project, via `Directory.Build.props`
 - MSTest (`MSTest.Sdk`), NSubstitute, FluentAssertions, RandomTestValues
+- ArchUnitNET for architecture tests
 - Swashbuckle for Swagger
 - `System.Text.Json` for JSON and Dapper for SQL (see [Preferred Libraries](CONTRIBUTING.md#preferred-libraries))
 

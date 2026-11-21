@@ -15,6 +15,7 @@ Tests run in parallel at method level (`MSTestSettings.cs`), so tests must not s
 - **NSubstitute** for mocking
 - **FluentAssertions** for assertions
 - **RandomTestValues** for randomized test data
+- **ArchUnitNET** for architecture tests that need type-level dependencies
 - **Microsoft.AspNetCore.App** framework reference for API integration tests. `Program` is declared `public partial class Program` in the IoC project so `WebApplicationFactory<Program>` can reach it.
 
 ## Test Driven Development
@@ -91,3 +92,20 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
   - `Api/CarsControllerTests/CreateShould.cs` → `ReturnCreated_AndStoreCar`, `ReturnBadRequest_WhenRequestIsInvalid`
 - Share setup across a class's method files with an abstract `<ClassName>TestBase` in the same folder (e.g. `CarsControllerTestBase.cs`) that holds `[TestInitialize]`, `[TestCleanup]`, and test-data builders. Each `<MethodName>Should` class inherits from it.
 - **Before adding a new test file, read the existing test base class first** so you don't redefine `[TestInitialize]` or duplicate setup logic.
+
+## Architecture Tests
+
+`DotNetExample.Tests/Architecture/` holds tests that enforce the conventions in [CONTRIBUTING.md](CONTRIBUTING.md) that a style analyzer can't see. They read the compiled assemblies, so they check what the code actually does, not just how it looks.
+
+| File | Enforces |
+|---|---|
+| `LayersShould.cs` | Project references between layers |
+| `InfrastructureShould.cs` | Only `DataAccess/Wrappers` depends on infrastructure namespaces (uses ArchUnitNET to read method bodies) |
+| `CodeShould.cs` | Banned libraries, no anonymous types or lambdas, `Async` suffix |
+| `FeatureFoldersShould.cs` | No types directly in a feature folder root |
+| `HandlersShould.cs` | Handler interface, method count, return types, and method naming |
+
+- Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is the one exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
+- Each test collects *every* violation and asserts the list is empty, so one run reports all offending types or methods by name.
+- **When you add a convention that can be checked mechanically, add a rule here.** Before trusting it, prove it can fail: plant a violation, watch the test fail with a message that names it, then remove the violation. A rule that has never failed may not be checking anything.
+- Anonymous types and lambdas are detected by the names the compiler generates for them (`<>f__AnonymousType…`, `…b__…`). Local functions and method groups don't produce these names, so they are allowed.

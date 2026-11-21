@@ -2,27 +2,38 @@
 
 Use this checklist when reviewing changes. Each item traces back to a rule in [CONTRIBUTING.md](CONTRIBUTING.md) or [TESTING.md](TESTING.md).
 
+## Enforced Automatically
+
+These rules fail `dotnet build` or `dotnet test`, so a green build covers them. Don't spend review time re-checking them. Instead, make sure nobody weakened the rule that enforces them (e.g. by lowering a severity in `.editorconfig`, adding to a `NoWarn`, or adding an exemption to an architecture test).
+
+| Rule | Enforced by |
+|---|---|
+| `var`, braces, file-scoped namespaces, usings placement, no unused usings, readonly fields, `_camelCase` private fields, `I`-prefixed interfaces | `.editorconfig`, enforced in build (`EnforceCodeStyleInBuild`) |
+| Namespace matches folder path | `.editorconfig` IDE0130, enforced in build |
+| `Nullable`, `ImplicitUsings`, `TreatWarningsAsErrors` | `Directory.Build.props` |
+| Domain references only the base class library; Api and DataAccess don't reference each other or IoC | `Architecture/LayersShould` |
+| Only `DataAccess/Wrappers` touches infrastructure (`System.Net`, `System.Data`, `System.IO`, Mongo, Dapper, …) | `Architecture/InfrastructureShould` |
+| No Newtonsoft.Json or EF Core | `Architecture/CodeShould.NotUseBannedLibraries` |
+| No anonymous types or lambdas, in production code or tests | `Architecture/CodeShould` |
+| Async methods end with `Async` (except controller actions and test methods) | `Architecture/CodeShould.NameAsyncMethodsWithAsyncSuffix` |
+| No types directly in a feature folder root (e.g. `Domain/Commands/`) | `Architecture/FeatureFoldersShould` |
+| Handlers implement their own interface with one method; Commands return `Task`, Queries return `Task<T>`; no generic method names or repeated nouns | `Architecture/HandlersShould` |
+
 ## Architecture
 
-- [ ] Domain has no new project or infrastructure package references.
-- [ ] Api does not reference DataAccess.
 - [ ] No `Program.cs` or DI wiring outside the IoC project.
 - [ ] New handlers, repositories, and wrappers are registered in `RegisterDependencies.cs`.
-- [ ] Repositories reach external stores only through a wrapper interface.
-- [ ] JSON uses `System.Text.Json` and SQL uses Dapper inside the SQL wrapper, with named parameter records; no Newtonsoft.Json or EF Core.
+- [ ] SQL goes through Dapper inside the SQL wrapper, with the query text built in the repository.
 - [ ] Wrapper interfaces are named after the kind of store (`IDocumentDatabaseWrapper`, `ISqlDatabaseWrapper`), not a product or hosting choice; technology names appear only on implementations.
-- [ ] New files are in the correct layer and feature folder (e.g. `Domain/Commands/Cars/`), with namespaces matching the folder path. Only controllers and shared wrappers stay flat.
+- [ ] New code is in the right feature folder (e.g. `Domain/Commands/Cars/`, not `Domain/Commands/Trucks/`).
 
 ## Design & Conventions
 
-- [ ] Writes are Commands in `Domain/Commands/<Feature>` returning `Task`; reads are Queries in `Domain/Queries/<Feature>` returning `Task<T>`.
-- [ ] Handlers are named `VerbNoun`, implement their own interface, and take repository interfaces through the constructor.
-- [ ] Handler methods complete the handler name as a sentence (`_getCar.ByAsync(id)`, `_updateCar.WithAsync(car)`): no generic `ExecuteAsync`/`HandleAsync`, and no repeated nouns (`ByIdAsync`, `WithCarAsync`).
-- [ ] Interfaces are prefixed with `I`; async methods end with `Async`.
+- [ ] Writes are Commands and reads are Queries.
+- [ ] Handler methods read as a sentence when called (`_getCar.ByAsync(id)`, `_updateCar.WithAsync(car)`).
 - [ ] Functions are small and names are descriptive; code reads without explanation.
-- [ ] No anonymous types or anonymous functions (lambdas, `delegate { … }`), in production code or tests, and no string-keyed dictionaries standing in for an anonymous type; use named records and method groups instead.
+- [ ] No string-keyed dictionaries standing in for an anonymous type (`new RouteValueDictionary { ["id"] = … }`); use named records.
 - [ ] Comments only explain *why*, or document public-facing APIs; no commented-out code.
-- [ ] New projects enable `Nullable`, `ImplicitUsings`, and `TreatWarningsAsErrors`.
 - [ ] The change solves the current requirement only, with no speculative code.
 
 ## Tests
@@ -36,6 +47,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 - [ ] Tests have `// Arrange`, `// Act`, `// Assert` comments and no other explanatory comments.
 - [ ] Test files follow `<Namespace>/<ClassName>Tests/<MethodName>Should.cs`, one file per method under test, with shared setup in a `<ClassName>TestBase` rather than duplicated.
 - [ ] Refactor-only changes leave existing Assert statements untouched.
+- [ ] A new convention that can be checked mechanically comes with an architecture test (see [TESTING.md](TESTING.md#architecture-tests)).
 
 ## Build
 
