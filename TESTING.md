@@ -115,13 +115,13 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 
 ## Architecture Tests
 
-`DotNetExample.Tests/Architecture/` holds tests that enforce the conventions in [CONTRIBUTING.md](CONTRIBUTING.md) that a style analyzer can't see. They read the compiled assemblies, so they check what the code actually does, not just how it looks.
+`DotNetExample.Tests/Architecture/` holds tests that enforce the conventions in [CONTRIBUTING.md](CONTRIBUTING.md) that a style analyzer can't see. They read the compiled assemblies, so they check what the code actually does, not just how it looks. Where the assemblies can't show something, they read the project files or the source.
 
 | File | Enforces |
 |---|---|
-| `LayersShould.cs` | Project references between layers |
+| `LayersShould.cs` | References between layers, both declared in `.csproj` files and compiled into the assemblies; no packages in Domain |
 | `InfrastructureShould.cs` | Only `DataAccess/Wrappers` depends on infrastructure namespaces (uses ArchUnitNET to read method bodies) |
-| `CodeShould.cs` | Banned libraries, no anonymous types, lambdas limited to one-line expressions, `Async` suffix |
+| `CodeShould.cs` | Banned libraries (as packages and in code), no anonymous types, lambdas limited to one-line expressions, `Async` suffix |
 | `FeatureFoldersShould.cs` | No types directly in a feature folder root |
 | `ApiShould.cs` | Controllers and API models expose no Domain types |
 | `HandlersShould.cs` | Handler interface, method count, return types, and method naming |
@@ -129,6 +129,7 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 - Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is an exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
 - Each test collects *every* violation and asserts `ViolationReport.Of(violations).Should().BeEmpty()`, so one run reports all offending types or methods by name. Don't assert `violations.Should().BeEmpty()` directly: on a list, FluentAssertions names only the first offender.
 - **When you add a convention that can be checked mechanically, add a rule here.** Before trusting it, prove it can fail: plant a violation, watch the test fail with a message that names it, then remove the violation. A rule that has never failed may not be checking anything.
+- **Check references in the project files as well as the assemblies.** The compiler leaves an unused project or package reference out of the assembly metadata, so a rule that reads only `GetReferencedAssemblies()` or type dependencies can't see a reference until code uses it. `ProjectFiles` reads the `ProjectReference` and `PackageReference` items of every project in the solution, so `LayersShould.DeclareProjectReferencesOnlyInward` and `CodeShould.NotReferenceBannedPackages` catch the reference as soon as it's added.
 - Anonymous types are detected in the compiled assemblies, by the names the compiler generates for them (`<>f__AnonymousType…`). Lambda length can't be seen after compilation, so `CodeShould.KeepLambdasToOneLineExpressions` parses the source files with Roslyn (`Microsoft.CodeAnalysis.CSharp`). It flags block-bodied lambdas, lambdas that span lines, and `delegate { … }` blocks, and reports each by file and line.
 
 ## Integration Tests

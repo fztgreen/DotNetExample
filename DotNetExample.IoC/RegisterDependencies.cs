@@ -18,7 +18,6 @@ public static class RegisterDependencies
         services.AddScoped<ISetFoo, SetFoo>();
         services.AddScoped<IFooRepository, FooRepository>();
         services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
-        services.AddSingleton<HttpClient>();
 
         services.AddScoped<IGetCar, GetCar>();
         services.AddScoped<IGetCars, GetCars>();

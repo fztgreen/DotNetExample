@@ -32,6 +32,19 @@ public class CodeShould
     }
 
     [TestMethod]
+    public void NotReferenceBannedPackages()
+    {
+        // Arrange
+        var projects = ProjectFiles.LoadAll();
+
+        // Act
+        var violations = BannedPackageReferencesIn(projects);
+
+        // Assert
+        ViolationReport.Of(violations).Should().BeEmpty();
+    }
+
+    [TestMethod]
     public void NotUseAnonymousTypes()
     {
         // Arrange
@@ -68,6 +81,28 @@ public class CodeShould
 
         // Assert
         ViolationReport.Of(methodsMissingSuffix).Should().BeEmpty();
+    }
+
+    private static List<string> BannedPackageReferencesIn(List<ProjectFile> projects)
+    {
+        var violations = new List<string>();
+        foreach (var project in projects)
+        {
+            foreach (var package in project.PackageReferences)
+            {
+                if (IsBanned(package))
+                {
+                    violations.Add($"{project.Name} references {package}");
+                }
+            }
+        }
+
+        return violations;
+    }
+
+    private static bool IsBanned(string package)
+    {
+        return _bannedNamespaces.Any(banned => package == banned || package.StartsWith($"{banned}."));
     }
 
     private static List<string> AsyncMethodsWithoutSuffixIn(Assembly[] assemblies)
