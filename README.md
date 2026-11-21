@@ -39,12 +39,25 @@ graph TD
 
 ```text
 DotNetExample/
-├── DotNetExample.Api/          # Controllers/, ApiConfiguration.cs
-├── DotNetExample.DataAccess/   # Repositories, Wrappers/
-├── DotNetExample.Domain/       # Commands/, Queries/, DataAccess/ (repository interfaces), Entities/
+├── DotNetExample.Api/
+│   ├── Controllers/            # CarsController.cs (flat: one controller per feature)
+│   ├── Models/Cars/            # Request/response DTOs
+│   └── ApiConfiguration.cs
+├── DotNetExample.DataAccess/
+│   ├── Cars/                   # CarRepository.cs
+│   └── Wrappers/               # Shared infrastructure wrappers (flat)
+├── DotNetExample.Domain/
+│   ├── Commands/Cars/          # AddCar, UpdateCar, DeleteCar
+│   ├── Queries/Cars/           # GetCar, GetCars
+│   ├── DataAccess/Cars/        # ICarRepository
+│   ├── Entities/Cars/          # Car, Engine, TireSize, EngineShape
+│   └── Exceptions/Cars/        # CarNotFoundException
 ├── DotNetExample.IoC/          # Program.cs, RegisterDependencies.cs
-└── DotNetExample.Tests/        # MSTest project
+└── DotNetExample.Tests/
+    └── Api/CarsControllerTests/  # One file per method: GetShould.cs, CreateShould.cs, …
 ```
+
+Code is grouped into a folder per feature inside each layer, with namespaces matching the folders. See [Feature Folders](CONTRIBUTING.md#feature-folders).
 
 ## Technology
 

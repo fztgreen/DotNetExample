@@ -82,9 +82,10 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 
 ## File Organization & Naming
 
-- Pattern: `DotNetExample.Tests/<Namespace>/<ClassName>Tests/<MethodName>Should_<Scenario>.cs`
+- Pattern: `DotNetExample.Tests/<Namespace>/<ClassName>Tests/<MethodName>Should.cs`
+- **One file per method under test.** The file holds one `[TestClass]` named `<MethodName>Should`, and every scenario for that method is a test method in it, named `<Outcome>_<Condition>`. Together they read as a sentence: `GetShould.ReturnNotFound_WhenCarDoesNotExist`.
 - Examples:
-  - `Api/FooControllerTests/GetShould_ReturnOk.cs`
-  - `Api/FooControllerTests/GetShould_Throw_WhenInvalid.cs`
-- Use `partial class` to share setup when splitting tests for the same method across files.
-- **Before adding a new partial file, read the existing base/setup partial first** so you don't redefine `[TestInitialize]` or duplicate setup logic.
+  - `Api/CarsControllerTests/GetShould.cs` → `ReturnOk_WhenCarExists`, `ReturnNotFound_WhenCarDoesNotExist`, `ReturnInternalServerError_WhenDatabaseFails`
+  - `Api/CarsControllerTests/CreateShould.cs` → `ReturnCreated_AndStoreCar`, `ReturnBadRequest_WhenRequestIsInvalid`
+- Share setup across a class's method files with an abstract `<ClassName>TestBase` in the same folder (e.g. `CarsControllerTestBase.cs`) that holds `[TestInitialize]`, `[TestCleanup]`, and test-data builders. Each `<MethodName>Should` class inherits from it.
+- **Before adding a new test file, read the existing test base class first** so you don't redefine `[TestInitialize]` or duplicate setup logic.

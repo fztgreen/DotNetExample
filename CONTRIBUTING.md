@@ -16,10 +16,29 @@ This solution is the standard template for .NET projects, so every change must p
 
 All business logic is split into Commands (writes) and Queries (reads):
 
-- **Commands**: `DotNetExample.Domain/Commands`, return `Task`.
-- **Queries**: `DotNetExample.Domain/Queries`, return `Task<T>`.
-- Name handlers `VerbNoun` (e.g. `GetFoo`, `SetFoo`), each implementing its own interface (`IGetFoo`).
+- **Commands**: `DotNetExample.Domain/Commands/<Feature>`, return `Task`.
+- **Queries**: `DotNetExample.Domain/Queries/<Feature>`, return `Task<T>`.
+- Name handlers `VerbNoun` (e.g. `GetCar`, `AddCar`), each implementing its own interface (`IGetCar`).
 - Inject repository interfaces through the constructor.
+
+### Feature Folders
+
+Inside each layer, group code into a folder per feature, and make the namespace match the folder path. A reader looking for everything about cars finds it under a `Cars/` folder in every layer.
+
+| Kind | Path | Namespace |
+|---|---|---|
+| Command | `DotNetExample.Domain/Commands/Cars/AddCar.cs` | `DotNetExample.Domain.Commands.Cars` |
+| Query | `DotNetExample.Domain/Queries/Cars/GetCar.cs` | `DotNetExample.Domain.Queries.Cars` |
+| Repository interface | `DotNetExample.Domain/DataAccess/Cars/ICarRepository.cs` | `DotNetExample.Domain.DataAccess.Cars` |
+| Entity / value object | `DotNetExample.Domain/Entities/Cars/Car.cs` | `DotNetExample.Domain.Entities.Cars` |
+| Domain exception | `DotNetExample.Domain/Exceptions/Cars/CarNotFoundException.cs` | `DotNetExample.Domain.Exceptions.Cars` |
+| Repository | `DotNetExample.DataAccess/Cars/CarRepository.cs` | `DotNetExample.DataAccess.Cars` |
+| Request/response DTO | `DotNetExample.Api/Models/Cars/CarRequest.cs` | `DotNetExample.Api.Models.Cars` |
+
+Two exceptions stay flat:
+
+- **Controllers** (`Api/Controllers/CarsController.cs`): a controller already *is* one feature.
+- **Shared infrastructure** that no single feature owns, such as `DataAccess/Wrappers/`.
 
 ### Naming
 
@@ -62,7 +81,7 @@ Every project must set:
 2. **Plan the first failing test.**
 3. **Run the Red/Green/Refactor cycle** described in [TESTING.md](TESTING.md), repeating until the feature is complete. Writing implementation code without a verified failing test is not allowed.
 4. **Work in small steps.** Don't generate large amounts of code at once, and don't anticipate future requirements — solve only the current failing test.
-5. **Check conformity.** New files must land in the correct layer and folder and use the matching namespace.
+5. **Check conformity.** New files must land in the correct layer and [feature folder](#feature-folders) and use the matching namespace.
 6. **Register new types** in `RegisterDependencies.cs`.
 
 ## Commit Messages

@@ -18,7 +18,8 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 - **TDD is mandatory.** Write a failing test, run it and confirm it fails, then write the minimum code to pass, then refactor without touching asserts. Never write implementation code first.
 - **Small steps.** After every file change or test run, stop and evaluate the next step. Don't generate large amounts of code at once or anticipate future requirements.
 - **Mock only wrappers.** When testing Commands/Queries, use the real repository with a mocked wrapper (e.g. `IHttpClientWrapper`).
-- **Before adding a partial test file, read the existing base/setup partial** to avoid redefining `[TestInitialize]`.
+- **Feature folders.** Put new code in a per-feature folder inside its layer (e.g. `Domain/Commands/Cars/`) with a matching namespace. Only controllers and shared wrappers stay flat.
+- **One test file per method under test** (`GetShould.cs`). Before adding one, read the existing `<ClassName>TestBase` to avoid redefining `[TestInitialize]`.
 - Register every new handler/repository/wrapper in `DotNetExample.IoC/RegisterDependencies.cs`.
 - **Use Conventional Commits** for commit messages and PR titles (see [CONTRIBUTING.md](CONTRIBUTING.md#commit-messages)).
 

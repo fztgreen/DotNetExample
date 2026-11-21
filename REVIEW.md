@@ -9,11 +9,11 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 - [ ] No `Program.cs` or DI wiring outside the IoC project.
 - [ ] New handlers, repositories, and wrappers are registered in `RegisterDependencies.cs`.
 - [ ] Repositories reach external stores only through a wrapper interface.
-- [ ] New files are in the correct layer and folder, with matching namespaces.
+- [ ] New files are in the correct layer and feature folder (e.g. `Domain/Commands/Cars/`), with namespaces matching the folder path. Only controllers and shared wrappers stay flat.
 
 ## Design & Conventions
 
-- [ ] Writes are Commands in `Domain/Commands` returning `Task`; reads are Queries in `Domain/Queries` returning `Task<T>`.
+- [ ] Writes are Commands in `Domain/Commands/<Feature>` returning `Task`; reads are Queries in `Domain/Queries/<Feature>` returning `Task<T>`.
 - [ ] Handlers are named `VerbNoun`, implement their own interface, and take repository interfaces through the constructor.
 - [ ] Interfaces are prefixed with `I`; async methods end with `Async`.
 - [ ] Functions are small and names are descriptive; code reads without explanation.
@@ -30,7 +30,7 @@ Use this checklist when reviewing changes. Each item traces back to a rule in [C
 - [ ] Assertions check return values or state; `Received()` is used only where nothing else is observable.
 - [ ] Test data is randomized with `RandomTestValues`, not hardcoded.
 - [ ] Tests have `// Arrange`, `// Act`, `// Assert` comments and no other explanatory comments.
-- [ ] Test files follow `<Namespace>/<ClassName>Tests/<MethodName>_<Scenario>.cs`, and partial classes don't duplicate setup.
+- [ ] Test files follow `<Namespace>/<ClassName>Tests/<MethodName>Should.cs`, one file per method under test, with shared setup in a `<ClassName>TestBase` rather than duplicated.
 - [ ] Refactor-only changes leave existing Assert statements untouched.
 
 ## Build
