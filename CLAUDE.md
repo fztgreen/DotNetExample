@@ -22,9 +22,17 @@ dotnet run --project DotNetExample.IoC       # the IoC project is the executable
 - Register every new handler/repository/wrapper in `DotNetExample.IoC/RegisterDependencies.cs`.
 - **Use Conventional Commits** for commit messages and PR titles (see [CONTRIBUTING.md](CONTRIBUTING.md#commit-messages)).
 
+## Reference Implementation
+
+`CarsController` is the reference CRUD feature: copy its shape for new resources.
+
+- Tests are integration tests over `WebApplicationFactory<Program>` (see `Tests/Api/CarsControllerTests/CarsControllerTestBase.cs`), so `[ApiController]` validation (400) and unhandled exceptions (500) are exercised for real. Only `IInMemoryDatabaseWrapper` is replaced with a substitute.
+- Commands return `Task`, so "not found" on update/delete is signalled with `CarNotFoundException` and mapped to 404 in the controller.
+- FluentAssertions is pinned to 7.x: 8.x requires a commercial license.
+
 ## Known Gaps
 
-The standards require FluentAssertions and RandomTestValues, but `DotNetExample.Tests.csproj` doesn't reference them yet (the existing test uses MSTest `Assert`). Add the package when a test first needs it.
+The original `FooControllerTests` still uses MSTest `Assert` and mocks Domain handlers; it predates the current standards.
 
 ## Project Docs
 

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,8 @@ public static class ApiConfiguration
 {
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
         return services;
     }
 }

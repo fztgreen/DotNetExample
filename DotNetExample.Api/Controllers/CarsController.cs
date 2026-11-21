@@ -1,0 +1,90 @@
+using DotNetExample.Api.Models;
+using DotNetExample.Domain.Commands;
+using DotNetExample.Domain.Entities;
+using DotNetExample.Domain.Exceptions;
+using DotNetExample.Domain.Queries;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DotNetExample.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CarsController : ControllerBase
+{
+    private readonly IGetCar _getCar;
+    private readonly IGetCars _getCars;
+    private readonly IAddCar _addCar;
+    private readonly IUpdateCar _updateCar;
+    private readonly IDeleteCar _deleteCar;
+
+    public CarsController(IGetCar getCar, IGetCars getCars, IAddCar addCar, IUpdateCar updateCar, IDeleteCar deleteCar)
+    {
+        _getCar = getCar;
+        _getCars = getCars;
+        _addCar = addCar;
+        _updateCar = updateCar;
+        _deleteCar = deleteCar;
+    }
+
+    [HttpGet]
+    [ProducesResponseType<IReadOnlyCollection<Car>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
+    {
+        var cars = await _getCars.ExecuteAsync();
+        return Ok(cars);
+    }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType<Car>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        var car = await _getCar.ExecuteAsync(id);
+        return car is null ? NotFound() : Ok(car);
+    }
+
+    [HttpPost]
+    [ProducesResponseType<Car>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create(CarRequest request)
+    {
+        var car = request.ToCar(Guid.NewGuid());
+        await _addCar.ExecuteAsync(car);
+        return CreatedAtAction(nameof(Get), new { id = car.Id }, car);
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(Guid id, CarRequest request)
+    {
+        try
+        {
+            await _updateCar.ExecuteAsync(request.ToCar(id));
+            return NoContent();
+        }
+        catch (CarNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            await _deleteCar.ExecuteAsync(id);
+            return NoContent();
+        }
+        catch (CarNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+}
