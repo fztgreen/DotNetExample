@@ -85,7 +85,7 @@ To meet both, **name and shape the interface after the kind of store, and name t
 | SQL data access | Dapper | Entity Framework Core and other full ORMs |
 
 - **System.Text.Json** is built into .NET and is what ASP.NET Core already uses, so the app has one serializer and one set of options. Configure it in `ApiConfiguration.AddApi()`, and have tests deserialize with matching `JsonSerializerOptions`.
-- **Dapper** lives only in DataAccess, inside the `ISqlDatabaseWrapper` implementation. The repository writes the SQL text and parameters, and the wrapper hands them straight to Dapper (e.g. `connection.QueryAsync<T>(sql, parameters)`). The query stays in the repository, where tests can match it exactly (see [Wrapper Interfaces](#wrapper-interfaces)). EF Core builds its SQL from LINQ lambdas. That hides the query from tests and breaks [No Anonymous Types or Functions](#no-anonymous-types-or-functions).
+- **Dapper** lives only in DataAccess, inside the `ISqlDatabaseWrapper` implementation. The repository writes the SQL text and parameters, and the wrapper hands them straight to Dapper (e.g. `connection.QueryAsync<T>(sql, parameters)`). The query stays in the repository, where tests can match it exactly (see [Wrapper Interfaces](#wrapper-interfaces)). EF Core builds its SQL from LINQ expressions at runtime, which hides the query from tests.
 - **Pass Dapper parameters as a named record**, not the usual anonymous object: `new CarByIdParameters(id)`, not `new { id }`. Dapper maps record properties to `@Id`-style parameters by name.
 
 ### Naming
@@ -105,24 +105,51 @@ Code is read far more often than it is written, so optimize for the reader.
 - **Keep functions small.** Each function does one thing at one level of abstraction. When a function needs a section break, or you're tempted to explain a block, extract it into a well-named method.
 - **Choose descriptive names over short ones.** Names say what something does or represents (`CalculateShippingCost`, `activeCustomers`), not how it's built (`DoWork`, `list2`, `tmp`). Avoid abbreviations and generic names like `Helper`, `Manager`, or `Data`.
 
-### No Anonymous Types or Functions
+### No Anonymous Types; Keep Lambdas Short
 
-Everything gets a name. Never use anonymous types or anonymous functions (lambdas and `delegate { … }` blocks), in production code or in tests.
+Shapes and logic get names. This applies to production code and tests.
 
-- **Instead of an anonymous type,** declare a named record whose properties give the shape (e.g. `record CarRouteValues(Guid Id)`).
+**Anonymous types are never allowed.**
+
+- Declare a named record whose properties give the shape (e.g. `record CarRouteValues(Guid Id)`).
 - **String-keyed bags count as anonymous.** `new RouteValueDictionary { ["id"] = car.Id }`, `new Dictionary<string, object> { … }` and similar initializers just rebuild an anonymous object with magic-string keys. Its shape is still undeclared, so declare a record instead.
-- **Instead of a lambda,** write a named method and pass it as a method group, or use a local function.
-- **Why:** a name says *what* the code does, so the call reads like a sentence (`AddJsonOptions(SerializeEnumsAsStrings)`) without the reader decoding the lambda body. Named methods also show up by name in stack traces and can be reused.
-- Expression-bodied members (`public int Count => _items.Count;`) are not anonymous functions. They are named members and are allowed.
+
+**Lambdas are fine when they're short:** a single expression on a single line. That covers the idiomatic cases, where a lambda is what any .NET reader expects:
+
+- LINQ predicates and selectors: `cars.Where(car => car.Engine.Cylinders > 6)`
+- options and builder configuration: `AddJsonOptions(options => options.AllowTrailingCommas = true)`
+- libraries that need an expression tree, which a named method can't provide: MongoDB filter builders, `Arg.Is<Car>(car => car.Id == id)`
+
+**Anything longer becomes a named method,** passed as a method group (`x.DoFoo(DoAThing)`) or written as a local function:
+
+- a lambda with a block body: `x => { …; …; }`
+- a lambda that wraps onto more than one line
+- `delegate { … }` blocks: never use them; write a short lambda or a named method instead
+
+**Why:** once a lambda needs a block or a second line, it's doing enough that it deserves a name. The name says *what* it does, so the call still reads like a sentence (`app.Use(LogRequestDurationAsync)`) without the reader decoding the body. Named methods also show up by name in stack traces and can be reused.
+
+Expression-bodied members (`public int Count => _items.Count;`) aren't lambdas. They're named members, and they're allowed.
 
 ```csharp
-// Don't
-services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+// Fine: short and idiomatic
+var bigEngines = cars.Where(car => car.Engine.Cylinders > 6);
+
+// Don't: a block-bodied lambda
+app.Use(async (context, next) =>
+{
+    var stopwatch = Stopwatch.StartNew();
+    await next(context);
+    logger.LogInformation("{Path} took {Elapsed}", context.Request.Path, stopwatch.Elapsed);
+});
+
+// Do: name it
+app.Use(LogRequestDurationAsync);
+
+// Don't: anonymous types, including string-keyed bags
 return CreatedAtAction(nameof(Get), new { id = car.Id }, car);
 return CreatedAtAction(nameof(Get), new RouteValueDictionary { ["id"] = car.Id }, car);
 
-// Do
-services.AddControllers().AddJsonOptions(SerializeEnumsAsStrings);
+// Do: a named record
 return CreatedAtAction(nameof(Get), new CarRouteValues(car.Id), car);
 ```
 

@@ -14,7 +14,7 @@ These rules fail `dotnet build` or `dotnet test`, so a green build covers them. 
 | Domain references only the base class library; Api and DataAccess don't reference each other or IoC | `Architecture/LayersShould` |
 | Only `DataAccess/Wrappers` touches infrastructure (`System.Net`, `System.Data`, `System.IO`, Mongo, Dapper, …) | `Architecture/InfrastructureShould` |
 | No Newtonsoft.Json or EF Core | `Architecture/CodeShould.NotUseBannedLibraries` |
-| No anonymous types or lambdas, in production code or tests | `Architecture/CodeShould` |
+| No anonymous types; lambdas are a single one-line expression; no `delegate { … }` blocks | `Architecture/CodeShould` |
 | Async methods end with `Async` (except controller actions and test methods) | `Architecture/CodeShould.NameAsyncMethodsWithAsyncSuffix` |
 | No types directly in a feature folder root (e.g. `Domain/Commands/`) | `Architecture/FeatureFoldersShould` |
 | Handlers implement their own interface with one method; Commands return `Task`, Queries return `Task<T>`; no generic method names or repeated nouns | `Architecture/HandlersShould` |

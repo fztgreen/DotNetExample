@@ -81,7 +81,7 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 
 - **Required:** `// Arrange`, `// Act`, `// Assert` comments delimiting each phase.
 - **Forbidden:** other inline comments explaining what or why. Extract logic into well-named private methods instead.
-- **Forbidden:** anonymous types and lambdas, including in test data (see [No Anonymous Types or Functions](CONTRIBUTING.md#no-anonymous-types-or-functions)). For data-driven cases that vary by behavior, pass named methods as method groups, e.g. `("Make empty", WithEmptyMake)`.
+- **Forbidden:** anonymous types, and lambdas longer than a single one-line expression, including in test data (see [No Anonymous Types; Keep Lambdas Short](CONTRIBUTING.md#no-anonymous-types-keep-lambdas-short)). Short lambdas such as `Arg.Is<Car>(car => car.Id == id)` are fine. For data-driven cases, either is fine: short lambdas (`("Make empty", request => request with { Make = "" })`) or named methods passed by name (`("Make empty", WithEmptyMake)`).
 
 ## File Organization & Naming
 
@@ -101,11 +101,11 @@ Mock as little as possible. Put the mock at the lowest point that has to be fake
 |---|---|
 | `LayersShould.cs` | Project references between layers |
 | `InfrastructureShould.cs` | Only `DataAccess/Wrappers` depends on infrastructure namespaces (uses ArchUnitNET to read method bodies) |
-| `CodeShould.cs` | Banned libraries, no anonymous types or lambdas, `Async` suffix |
+| `CodeShould.cs` | Banned libraries, no anonymous types, lambdas limited to one-line expressions, `Async` suffix |
 | `FeatureFoldersShould.cs` | No types directly in a feature folder root |
 | `HandlersShould.cs` | Handler interface, method count, return types, and method naming |
 
 - Files are named `<Subject>Should.cs`, with one test per rule, so a failure reads as a sentence: `HandlersShould.ImplementTheirOwnInterface`. This is the one exception to the `<ClassName>Tests/<MethodName>Should.cs` pattern, because there's no single class under test.
-- Each test collects *every* violation and asserts the list is empty, so one run reports all offending types or methods by name.
+- Each test collects *every* violation and asserts `ViolationReport.Of(violations).Should().BeEmpty()`, so one run reports all offending types or methods by name. Don't assert `violations.Should().BeEmpty()` directly: on a list, FluentAssertions names only the first offender.
 - **When you add a convention that can be checked mechanically, add a rule here.** Before trusting it, prove it can fail: plant a violation, watch the test fail with a message that names it, then remove the violation. A rule that has never failed may not be checking anything.
-- Anonymous types and lambdas are detected by the names the compiler generates for them (`<>f__AnonymousType…`, `…b__…`). Local functions and method groups don't produce these names, so they are allowed.
+- Anonymous types are detected in the compiled assemblies, by the names the compiler generates for them (`<>f__AnonymousType…`). Lambda length can't be seen after compilation, so `CodeShould.KeepLambdasToOneLineExpressions` parses the source files with Roslyn (`Microsoft.CodeAnalysis.CSharp`). It flags block-bodied lambdas, lambdas that span lines, and `delegate { … }` blocks, and reports each by file and line.
